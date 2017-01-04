@@ -1,0 +1,64 @@
+﻿@model List<Journals.Model.SubscriptionViewModel>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Style
+{
+    <style type="text/css">
+        .table {
+            table-layout: fixed;
+        }
+
+            .table td {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+    </style>
+}
+
+<h2>List of Journals for Subscription</h2>
+
+@if (Model == null)
+{
+    <div>No journals are available for subscription.</div>
+}
+else
+{
+    <table class="table table-condensed table-striped">
+
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody></tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @if (item.IsSubscribed)
+                    {
+                        @Html.ActionLink("Un Subscribe", "UnSubscribe", new { id = item.Id })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Subscribe", "Subscribe", new { id = item.Id })
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+}

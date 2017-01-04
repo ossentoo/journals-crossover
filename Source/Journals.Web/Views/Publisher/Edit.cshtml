@@ -1,0 +1,63 @@
+﻿@model Journals.Model.JournalUpdateViewModel
+
+@{
+    ViewBag.Title = "Update Journal";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Edit Journal</h2>
+
+@using (Html.BeginForm("Edit", "Publisher", null, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.FileName)
+        @Html.HiddenFor(model => model.File)
+        @Html.HiddenFor(model => model.UserId)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-10" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control col-md-10", style="height:300px" } })
+                @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <span class="control-label col-md-2"><strong>Current Journal</strong></span>
+            <div class="col-md-10">
+                @Html.ActionLink(Model.FileName, "GetFile", new { Id = Model.Id }, new { target = "_blank" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.Label("Journal File", new { @class = "control-label col-md-2" })
+            (Not more than 3.5 MB)
+            <div class="col-md-10">
+
+                @Html.TextBoxFor(m => Model.File, new { type = "file", accept = ".pdf" })
+                @Html.ValidationMessageFor(model => model.File)
+            </div>
+        </div>
+        <br />
+        <div class="form-group">
+            <div>
+                <input type="submit" value="Save" class="btn btn-default" /> | @Html.ActionLink("Back to List", "Index")
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

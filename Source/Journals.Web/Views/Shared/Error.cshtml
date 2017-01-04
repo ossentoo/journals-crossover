@@ -1,0 +1,40 @@
+﻿@model System.Web.Mvc.HandleErrorInfo
+
+@{
+    ViewBag.Title = "Error";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title - Journals Journals</title>
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <meta name="viewport" content="width=device-width" />
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Styles.Render("~/Content/bootstrapcss")
+    @if (IsSectionDefined("Style"))
+    {
+        @RenderSection("Style");
+    }
+    else
+    {
+        <style type="text/css">
+            /* Default styles */
+        </style>
+    }
+</head>
+<body>
+    <header>
+        <hgroup class="title">
+            <h1 class="error">Error.</h1>
+            <h2 class="error">An error occurred while processing your request.</h2>
+        </hgroup>
+        @if (Model.Exception != null && Model.Exception.Message != null)
+        {
+            <div>@Model.Exception.Message</div>
+        }
+    </header>
+</body>
+</html>

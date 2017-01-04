@@ -1,0 +1,23 @@
+﻿@{
+    ViewBag.Title = "Journals";
+}
+@section featured {
+    <section class="featured">
+        <div class="content-wrapper">
+            <hgroup class="title">
+                <h1>@ViewBag.Title.</h1>
+                <h2>@ViewBag.Message</h2>
+            </hgroup>
+            <p>
+                Welcome to Journals Journals
+            </p>
+        </div>
+    </section>
+}
+<h3>Journals Journals</h3>
+<p>
+    Publish Journals here: @Html.ActionLink("Publish Journals", "Index", "Publisher")
+</p>
+<p>
+    Subscribe to Journals here: @Html.ActionLink("Subscribe", "Index", "Subscriber")
+</p>
