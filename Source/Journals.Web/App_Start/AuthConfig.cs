@@ -1,4 +1,4 @@
-﻿namespace Journals.Web
+﻿namespace Medico.Web
 {
     public static class AuthConfig
     {

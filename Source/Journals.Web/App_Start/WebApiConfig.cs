@@ -1,6 +1,6 @@
 ﻿using System.Web.Http;
 
-namespace Journals.Web
+namespace Medico.Web
 {
     public static class WebApiConfig
     {

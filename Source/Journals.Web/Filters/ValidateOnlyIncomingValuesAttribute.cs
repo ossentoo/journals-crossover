@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Web.Mvc;
 
-namespace Journals.Web.Filters
+namespace Medico.Web.Filters
 {
     public class ValidateOnlyIncomingValuesAttribute : ActionFilterAttribute
     {

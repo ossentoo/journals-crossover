@@ -1,7 +1,7 @@
-﻿using Journals.Model;
-using System.Web;
+﻿using System.Web;
+using Journals.Model;
 
-namespace Journals.Web.Helpers
+namespace Medico.Web.Helpers
 {
     public static class JournalHelper
     {

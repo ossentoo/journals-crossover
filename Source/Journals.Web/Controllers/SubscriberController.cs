@@ -1,14 +1,14 @@
-﻿using AutoMapper;
-using Journals.Model;
-using Journals.Repository;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Mvc;
 using System.Web.Security;
+using AutoMapper;
+using Journals.Model;
+using Journals.Repository;
 
-namespace Journals.Web.Controllers
+namespace Medico.Web.Controllers
 {
     [Authorize]
     public class SubscriberController : Controller

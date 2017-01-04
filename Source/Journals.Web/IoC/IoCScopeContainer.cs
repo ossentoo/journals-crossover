@@ -1,7 +1,7 @@
-﻿using Microsoft.Practices.Unity;
-using System.Web.Http.Dependencies;
+﻿using System.Web.Http.Dependencies;
+using Microsoft.Practices.Unity;
 
-namespace Journals.Web.IoC
+namespace Medico.Web.IoC
 {
     public class IoCScopeContainer : ScopeContainer, System.Web.Mvc.IDependencyResolver
     {

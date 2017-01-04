@@ -1,16 +1,16 @@
-﻿using DotNetOpenAuth.AspNet;
-using Journals.Model;
-using Journals.Repository.DataContext;
-using Microsoft.Web.WebPages.OAuth;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using System.Web.Mvc;
 using System.Web.Security;
+using DotNetOpenAuth.AspNet;
+using Journals.Model;
+using Journals.Repository.DataContext;
+using Microsoft.Web.WebPages.OAuth;
 using WebMatrix.WebData;
 
-namespace Journals.Web.Controllers
+namespace Medico.Web.Controllers
 {
     [Authorize]
     public class AccountController : Controller

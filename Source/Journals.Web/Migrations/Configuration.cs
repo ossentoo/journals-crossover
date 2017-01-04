@@ -1,8 +1,8 @@
-namespace Journals.Web.Migrations
-{
-    using Journals.Repository.DataContext;
-    using System.Data.Entity.Migrations;
+using System.Data.Entity.Migrations;
+using Journals.Repository.DataContext;
 
+namespace Medico.Web.Migrations
+{
     internal sealed class Configuration : DbMigrationsConfiguration<UsersContext>
     {
         public Configuration()

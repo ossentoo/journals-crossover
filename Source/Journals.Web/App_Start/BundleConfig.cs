@@ -1,6 +1,6 @@
 ﻿using System.Web.Optimization;
 
-namespace Journals.Web
+namespace Medico.Web
 {
     public class BundleConfig
     {

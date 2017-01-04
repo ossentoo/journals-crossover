@@ -1,16 +1,16 @@
-﻿using AutoMapper;
-using Journals.Model;
-using Journals.Repository;
-using Journals.Web.Controllers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Security;
+using AutoMapper;
+using Journals.Model;
+using Journals.Repository;
+using Medico.Web.Controllers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Telerik.JustMock;
 
-namespace Journals.Web.Tests.Controllers
+namespace Medico.Web.Tests.Controllers
 {
     [TestClass]
     public class PublisherControllerTest

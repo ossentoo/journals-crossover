@@ -1,14 +1,14 @@
-﻿using AutoMapper;
-using Journals.Model;
-using Journals.Repository;
-using Journals.Web.Filters;
-using Journals.Web.Helpers;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Web.Mvc;
+using AutoMapper;
+using Journals.Model;
+using Journals.Repository;
+using Medico.Web.Filters;
+using Medico.Web.Helpers;
 
-namespace Journals.Web.Controllers
+namespace Medico.Web.Controllers
 {
     [AuthorizeRedirect(Roles = "Publisher")]
     public class PublisherController : Controller
