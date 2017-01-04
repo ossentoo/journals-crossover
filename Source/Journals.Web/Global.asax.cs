@@ -9,6 +9,7 @@ using System.Web.Routing;
 using AutoMapper;
 using Journals.Model;
 using Journals.Repository.DataContext;
+using Medico.Model.Helpers;
 using Medico.Web.IoC;
 
 namespace Medico.Web
@@ -36,15 +37,7 @@ namespace Medico.Web
             var mappingContainer = IoCMappingContainer.GetInstance();
             DependencyResolver.SetResolver(new IoCScopeContainer(mappingContainer));
 
-            Mapper.CreateMap<Journal, JournalViewModel>();
-            Mapper.CreateMap<JournalViewModel, Journal>();
-
-            Mapper.CreateMap<Journal, JournalUpdateViewModel>();
-            Mapper.CreateMap<JournalUpdateViewModel, Journal>();
-
-            Mapper.CreateMap<Journal, SubscriptionViewModel>();
-            Mapper.CreateMap<SubscriptionViewModel, Journal>();
-
+            AutoMapperHelper.Initialize();
             LazyInitializer.EnsureInitialized(ref _initializer, ref _isInitialized, ref _initializerLock);
         }
 
