@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using Journals.Model;
 using Medico.Model;
 
 namespace Medico.Repository
@@ -20,18 +19,12 @@ namespace Medico.Repository
         protected readonly DbContext Context;
         private IDbSet<T> _entities;
 
-        public Repository(DbContext context)
+        protected Repository(DbContext context)
         {
             Context = context;
         }
 
-        protected virtual IDbSet<T> Entities
-        {
-            get
-            {
-                return _entities ?? (_entities = Context.Set<T>());
-            }
-        }
+        protected virtual IDbSet<T> Entities => _entities ?? (_entities = Context.Set<T>());
 
         public IEnumerable<T> Get(Func<T, bool> @where)
         {
@@ -57,6 +50,8 @@ namespace Medico.Repository
             if (entity == null)
                 throw new ArgumentNullException("entity");
 
+            Entities.Attach(entity);
+            Context.Entry(entity).State = EntityState.Modified;
             Context.SaveChanges();
         }
 
@@ -65,7 +60,7 @@ namespace Medico.Repository
             if (entity == null)
                 throw new ArgumentNullException("entity");
 
-            Entities.Add(entity);
+            Entities.Remove(entity);
             Context.SaveChanges();
         }
     }

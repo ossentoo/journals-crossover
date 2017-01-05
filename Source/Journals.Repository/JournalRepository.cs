@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Linq;
 using Journals.Model;
 using Medico.Model;
 
@@ -32,19 +33,23 @@ namespace Medico.Repository
             return operationStatus;
         }
 
-        public Journal GetJournalById(int Id)
+        public Journal GetJournalById(int id)
         {
-            throw new NotImplementedException();
+            return Get(j=>j.Id==id).FirstOrDefault();
         }
 
         public OperationStatus DeleteJournal(Journal journal)
         {
-            throw new NotImplementedException();
+            Delete(journal);
+            var operationStatus = new OperationStatus { Status = true };
+            return operationStatus;
         }
 
         public OperationStatus UpdateJournal(Journal journal)
         {
-            throw new NotImplementedException();
+            Update(journal);
+            var operationStatus = new OperationStatus { Status = true };
+            return operationStatus;
         }
     }
 }
