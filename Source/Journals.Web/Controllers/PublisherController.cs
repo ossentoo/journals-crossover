@@ -4,7 +4,8 @@ using System.Net.Http;
 using System.Web.Mvc;
 using AutoMapper;
 using Journals.Model;
-using Journals.Repository;
+using Medico.Model;
+using Medico.Repository;
 using Medico.Web.Filters;
 using Medico.Web.Helpers;
 
@@ -13,8 +14,8 @@ namespace Medico.Web.Controllers
     [AuthorizeRedirect(Roles = "Publisher")]
     public class PublisherController : Controller
     {
-        private IJournalRepository _journalRepository;
-        private IStaticMembershipService _membershipService;
+        private readonly IJournalRepository _journalRepository;
+        private readonly IStaticMembershipService _membershipService;
 
         public PublisherController(IJournalRepository journalRepo, IStaticMembershipService membershipService)
         {
@@ -26,8 +27,8 @@ namespace Medico.Web.Controllers
         {
             var userId = (int)_membershipService.GetUser().ProviderUserKey;
 
-            List<Journal> allJournals = _journalRepository.GetAllJournals(userId);
-            var journals = Mapper.Map<List<Journal>, List<JournalViewModel>>(allJournals);
+            var allJournals = _journalRepository.GetAllJournals(userId);
+            var journals = Mapper.Map<IEnumerable<Journal>, IEnumerable<JournalViewModel>>(allJournals);
             return View(journals);
         }
 

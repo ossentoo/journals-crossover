@@ -1,114 +1,50 @@
-﻿using Journals.Model;
-using Journals.Repository.DataContext;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Validation;
-using System.Linq;
+using Journals.Model;
+using Medico.Model;
 
-namespace Journals.Repository
+namespace Medico.Repository
 {
-    public class JournalRepository : RepositoryBase<JournalsContext>, IJournalRepository
+
+    public interface IDbContext
     {
-        public List<Journal> GetAllJournals(int userId)
+        bool IsDisposed { get; set; }
+
+        int SaveChanges();
+    }
+
+    public class JournalRepository : Repository<Journal>, IJournalRepository
+    {
+        public JournalRepository(DbContext context) : base(context)
         {
-            using (DataContext)
-            {
-                return DataContext.Journals.Where(j => j.Id > 0 && j.UserId == userId).ToList();
-            }
         }
 
-        public Journal GetJournalById(int Id)
+        public IEnumerable<Journal> GetAllJournals(int userId)
         {
-            using (DataContext)
-                return DataContext.Journals.SingleOrDefault(j => j.Id == Id);
+            return Get(u=>u.UserId == userId);
         }
 
         public OperationStatus AddJournal(Journal newJournal)
         {
-            var opStatus = new OperationStatus { Status = true };
-            try
-            {
-                using (DataContext)
-                {
-                    newJournal.ModifiedDate = DateTime.Now;
-                    var j = DataContext.Journals.Add(newJournal);
-                    DataContext.SaveChanges();
-                }
-            }
-            catch (Exception e)
-            {
-                opStatus = OperationStatus.CreateFromException("Error adding journal: ", e);
-            }
+            Add(newJournal);
+            var operationStatus = new OperationStatus {Status = true};
+            return operationStatus;
+        }
 
-            return opStatus;
+        public Journal GetJournalById(int Id)
+        {
+            throw new NotImplementedException();
         }
 
         public OperationStatus DeleteJournal(Journal journal)
         {
-            var opStatus = new OperationStatus { Status = true };
-            try
-            {
-                using (DataContext)
-                {
-                    var subscriptions = DataContext.Subscriptions.Where(j => j.JournalId == journal.Id);
-                    foreach (var subscription in subscriptions)
-                    {
-                        DataContext.Subscriptions.Remove(subscription);
-                    }
-
-                    var journalToBeDeleted = DataContext.Journals.Find(journal.Id);
-                    DataContext.Journals.Remove(journalToBeDeleted);
-                    DataContext.SaveChanges();
-                }
-            }
-            catch (Exception e)
-            {
-                opStatus = OperationStatus.CreateFromException("Error deleting journal: ", e);
-            }
-
-            return opStatus;
+            throw new NotImplementedException();
         }
 
         public OperationStatus UpdateJournal(Journal journal)
         {
-            var opStatus = new OperationStatus { Status = true };
-            try
-            {
-                var j = DataContext.Journals.Find(journal.Id);
-                if (journal.Title != null)
-                    j.Title = journal.Title;
-
-                if (journal.Description != null)
-                    j.Description = journal.Description;
-
-                if (journal.Content != null)
-                    j.Content = journal.Content;
-
-                if (journal.ContentType != null)
-                    j.ContentType = journal.ContentType;
-
-                if (journal.FileName != null)
-                    j.FileName = journal.FileName;
-
-                j.ModifiedDate = DateTime.Now;
-
-                DataContext.Entry(j).State = EntityState.Modified;
-                DataContext.SaveChanges();
-            }
-            catch (DbEntityValidationException e)
-            {
-                foreach (var eve in e.EntityValidationErrors)
-                {
-                    OperationStatus.CreateFromException(string.Format("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:", eve.Entry.Entity.GetType().Name, eve.Entry.State), e);
-                }
-            }
-            catch (Exception e)
-            {
-                opStatus = OperationStatus.CreateFromException("Error updating journal: ", e);
-            }
-
-            return opStatus;
+            throw new NotImplementedException();
         }
     }
 }

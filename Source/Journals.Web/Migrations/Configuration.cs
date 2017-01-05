@@ -1,5 +1,5 @@
 using System.Data.Entity.Migrations;
-using Journals.Repository.DataContext;
+using Medico.Repository.DataContext;
 
 namespace Medico.Web.Migrations
 {

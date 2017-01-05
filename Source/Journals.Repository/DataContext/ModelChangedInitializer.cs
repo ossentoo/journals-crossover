@@ -3,7 +3,7 @@ using System.Linq;
 using System.Web.Security;
 using WebMatrix.WebData;
 
-namespace Journals.Repository.DataContext
+namespace Medico.Repository.DataContext
 {
     public class ModelChangedInitializer : DropCreateDatabaseIfModelChanges<JournalsContext>
     {

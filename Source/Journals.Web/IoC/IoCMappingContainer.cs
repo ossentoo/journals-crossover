@@ -1,4 +1,4 @@
-﻿using Journals.Repository;
+﻿using Medico.Repository;
 using Medico.Web.Controllers;
 using Microsoft.Practices.Unity;
 

@@ -5,7 +5,6 @@ using System.Web.Mvc;
 using System.Web.Security;
 using AutoMapper;
 using Journals.Model;
-using Journals.Repository;
 using Medico.Web.Controllers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Telerik.JustMock;

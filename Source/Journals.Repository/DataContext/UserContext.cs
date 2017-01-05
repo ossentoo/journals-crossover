@@ -1,7 +1,7 @@
-﻿using Journals.Model;
-using System.Data.Entity;
+﻿using System.Data.Entity;
+using Journals.Model;
 
-namespace Journals.Repository.DataContext
+namespace Medico.Repository.DataContext
 {
     public class UsersContext : DbContext
     {

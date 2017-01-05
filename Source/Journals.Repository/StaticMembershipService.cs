@@ -1,7 +1,7 @@
 ﻿using System.Web.Security;
 using WebMatrix.WebData;
 
-namespace Journals.Repository
+namespace Medico.Repository
 {
     public class StaticMembershipService : IStaticMembershipService
     {

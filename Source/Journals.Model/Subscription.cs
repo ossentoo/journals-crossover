@@ -1,11 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Journals.Model;
 
-namespace Journals.Model
+namespace Medico.Model
 {
-    public class Subscription
+    public class Subscription : BaseEntity
     {
-        public int Id { get; set; }
-
         [ForeignKey("JournalId")]
         public Journal Journal { get; set; }
 

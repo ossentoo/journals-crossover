@@ -6,7 +6,7 @@ using System.Web.Mvc;
 using System.Web.Security;
 using DotNetOpenAuth.AspNet;
 using Journals.Model;
-using Journals.Repository.DataContext;
+using Medico.Repository.DataContext;
 using Microsoft.Web.WebPages.OAuth;
 using WebMatrix.WebData;
 

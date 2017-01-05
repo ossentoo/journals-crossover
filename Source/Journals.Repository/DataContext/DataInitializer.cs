@@ -1,4 +1,4 @@
-﻿namespace Journals.Repository.DataContext
+﻿namespace Medico.Repository.DataContext
 {
     internal static class DataInitializer
     {

@@ -1,11 +1,12 @@
-﻿using Journals.Model;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Journals.Model;
+using Medico.Model;
 
-namespace Journals.Repository
+namespace Medico.Repository
 {
     public interface IJournalRepository
     {
-        List<Journal> GetAllJournals(int userId);
+        IEnumerable<Journal> GetAllJournals(int userId);
 
         OperationStatus AddJournal(Journal newJournal);
 

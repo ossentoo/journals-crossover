@@ -1,12 +1,12 @@
 ﻿using WebMatrix.WebData;
 
-namespace Journals.Repository.DataContext
+namespace Medico.Repository.DataContext
 {
     public class SimpleMembershipInitializer
     {
         public SimpleMembershipInitializer()
         {
-            using (var context1 = new JournalsContext())
+            using (var context1 = new JournalsContext("name=JournalsDB"))
                 context1.Journals.Find(1);
 
             using (var context = new UsersContext())

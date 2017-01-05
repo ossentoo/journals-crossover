@@ -85,10 +85,10 @@
     <Compile Include="StaticMembershipService.cs" />
     <Compile Include="SubscriptionRepository.cs" />
     <Compile Include="JournalRepository.cs" />
-    <Compile Include="DataContext\MedicoContext.cs" />
+    <Compile Include="DataContext\JournalsContext.cs" />
     <Compile Include="DataContext\ModelChangedInitializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RepositoryBase.cs" />
+    <Compile Include="Repository.cs" />
     <Compile Include="DataContext\UserContext.cs" />
   </ItemGroup>
   <ItemGroup>

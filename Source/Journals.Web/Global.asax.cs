@@ -8,8 +8,8 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using AutoMapper;
 using Journals.Model;
-using Journals.Repository.DataContext;
 using Medico.Model.Helpers;
+using Medico.Repository.DataContext;
 using Medico.Web.IoC;
 
 namespace Medico.Web

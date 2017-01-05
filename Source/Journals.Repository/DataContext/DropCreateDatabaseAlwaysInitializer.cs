@@ -1,6 +1,6 @@
 ﻿using System.Data.Entity;
 
-namespace Journals.Repository.DataContext
+namespace Medico.Repository.DataContext
 {
     public class DropCreateDatabaseAlwaysInitializer : DropCreateDatabaseAlways<JournalsContext>
     {

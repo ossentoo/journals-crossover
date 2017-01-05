@@ -6,7 +6,8 @@ using System.Web.Mvc;
 using System.Web.Security;
 using AutoMapper;
 using Journals.Model;
-using Journals.Repository;
+using Medico.Model;
+using Medico.Repository;
 
 namespace Medico.Web.Controllers
 {
@@ -14,7 +15,7 @@ namespace Medico.Web.Controllers
     public class SubscriberController : Controller
     {
         private IJournalRepository _journalRepository;
-        private ISubscriptionRepository _subscriptionRepository;
+        private readonly ISubscriptionRepository _subscriptionRepository;
 
         public SubscriberController(IJournalRepository journalRepo, ISubscriptionRepository subscriptionRepo)
         {

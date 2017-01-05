@@ -1,5 +1,5 @@
 ﻿using System.Web;
-using Journals.Model;
+using Medico.Model;
 
 namespace Medico.Web.Helpers
 {

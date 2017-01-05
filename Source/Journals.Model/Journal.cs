@@ -1,13 +1,18 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Journals.Model;
 
-namespace Journals.Model
+namespace Medico.Model
 {
-    public class Journal
+
+    public abstract class BaseEntity
     {
         public int Id { get; set; }
+    }
 
+    public class Journal: BaseEntity
+    {
         [Required]
         public string Title { get; set; }
 
