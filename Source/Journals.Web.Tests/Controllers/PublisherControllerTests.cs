@@ -17,47 +17,54 @@ namespace Medico.Web.Tests.Controllers
     [TestClass]
     public class PublisherControllerTests : BaseTests
     {
+        private readonly Mock<IStaticMembershipService> _membershipRepository;
+        private readonly Mock<MembershipUser> _userMock;
+        private readonly Mock<IJournalRepository> _journalRepository;
         private const string ContentType = "application/pdf";
+
+        public PublisherControllerTests()
+        {
+            _membershipRepository = new Mock<IStaticMembershipService>();
+            _userMock = new Mock<MembershipUser>();
+            _journalRepository = new Mock<IJournalRepository>();
+
+        }
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            _userMock.Setup(x => x.ProviderUserKey).Returns(1);
+            _membershipRepository.Setup(x => x.GetUser()).Returns(_userMock.Object);
+
+            _journalRepository.Setup(x => x.GetAllJournals((int)_userMock.Object.ProviderUserKey)).Returns(new List<Journal>(){
+                    new Journal{ Id=1, Description="TestDesc", FileName="TestFilename.pdf", Title="Tester", UserId=1, ModifiedDate= DateTime.Now},
+                    new Journal{ Id=1, Description="TestDesc2", FileName="TestFilename2.pdf", Title="Tester2", UserId=1, ModifiedDate = DateTime.Now}
+            });
+        }
 
         [TestMethod]
         public void Index_Returns_All_Journals()
         {
 
             //Arrange
-            var membershipRepository = new Mock<IStaticMembershipService>();
-            var userMock = new Mock<MembershipUser>();
-            userMock.Setup(x=>x.ProviderUserKey).Returns(1);
-            membershipRepository.Setup(x=>x.GetUser()).Returns(userMock.Object);
-
-            var journalRepository = new Mock<IJournalRepository>();
-
-            journalRepository.Setup(x=>x.GetAllJournals((int)userMock.Object.ProviderUserKey)).Returns(new List<Journal>(){
-                    new Journal{ Id=1, Description="TestDesc", FileName="TestFilename.pdf", Title="Tester", UserId=1, ModifiedDate= DateTime.Now},
-                    new Journal{ Id=1, Description="TestDesc2", FileName="TestFilename2.pdf", Title="Tester2", UserId=1, ModifiedDate = DateTime.Now}
-            });
 
 
             //Act
-            var controller = new PublisherController(journalRepository.Object, membershipRepository.Object);
+            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
             var actionResult = (ViewResult)controller.Index();
             var model = actionResult.Model as IEnumerable<JournalViewModel>;
 
             //Assert
             Assert.AreEqual(2, model.Count());
-            journalRepository.Verify(x => x.GetAllJournals((int)userMock.Object.ProviderUserKey), Times.AtLeastOnce);
+            _journalRepository.Verify(x => x.GetAllJournals((int)_userMock.Object.ProviderUserKey), Times.AtLeastOnce);
         }
 
         [TestMethod]
         public void Create_Returns_View()
         {
-            var membershipRepository = new Mock<IStaticMembershipService>();
-            var userMock = new Mock<MembershipUser>();
-            userMock.Setup(x => x.ProviderUserKey).Returns(1);
-            membershipRepository.Setup(x => x.GetUser()).Returns(userMock.Object);
-            var journalRepository = new Mock<IJournalRepository>();
 
             //Act
-            var controller = new PublisherController(journalRepository.Object, membershipRepository.Object);
+            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
             var actionResult = (ViewResult)controller.Create();
 
             //Assert
@@ -67,22 +74,20 @@ namespace Medico.Web.Tests.Controllers
         [TestMethod]
         public void GetFile_Returns_A_Journal()
         {
-
+            
             //Arrange
-            var membershipRepository = new Mock<IStaticMembershipService>();
-            var userMock = new Mock<MembershipUser>();
-            userMock.Setup(x => x.ProviderUserKey).Returns(1);
-            membershipRepository.Setup(x => x.GetUser()).Returns(userMock.Object);
-            var journalRepository = new Mock<IJournalRepository>();
+
+            _userMock.Setup(x => x.ProviderUserKey).Returns(1);
+            _membershipRepository.Setup(x => x.GetUser()).Returns(_userMock.Object);
 
             var contentType = "application/pdf";
-            journalRepository.Setup(x => x.GetJournalById(It.IsInRange(1,10, Range.Inclusive))).Returns(new Journal {
+            _journalRepository.Setup(x => x.GetJournalById(It.IsInRange(1,10, Range.Inclusive))).Returns(new Journal {
                 Content = new byte[] { 1, 2, 3, 4, 5 },
                 ContentType = contentType
             });
 
             //Act
-            var controller = new PublisherController(journalRepository.Object, membershipRepository.Object);
+            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
             var fileContentResult = (FileContentResult)controller.GetFile(1);
 
             //Assert
@@ -97,16 +102,12 @@ namespace Medico.Web.Tests.Controllers
         {
 
             //Arrange
-            var membershipRepository = new Mock<IStaticMembershipService>();
-            var userMock = new Mock<MembershipUser>();
-            userMock.Setup(x => x.ProviderUserKey).Returns(1);
-            membershipRepository.Setup(x => x.GetUser()).Returns(userMock.Object);
             var journalRepository = new Mock<IJournalRepository>();
 
             journalRepository.Setup(x => x.GetJournalById(0)).Returns((Journal) null);
 
             //Act
-            var controller = new PublisherController(journalRepository.Object, membershipRepository.Object);
+            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
             controller.GetFile(0);
         }
 
@@ -115,20 +116,15 @@ namespace Medico.Web.Tests.Controllers
         {
 
             //Arrange
-            var membershipRepository = new Mock<IStaticMembershipService>();
-            var userMock = new Mock<MembershipUser>();
-            userMock.Setup(x => x.ProviderUserKey).Returns(1);
-            membershipRepository.Setup(x => x.GetUser()).Returns(userMock.Object);
-            var journalRepository = new Mock<IJournalRepository>();
 
-            journalRepository.Setup(x => x.GetJournalById(It.IsInRange(1, 10, Range.Inclusive))).Returns(new Journal
+            _journalRepository.Setup(x => x.GetJournalById(It.IsInRange(1, 10, Range.Inclusive))).Returns(new Journal
             {
                 Content = new byte[] { 1, 2, 3, 4, 5 },
                 ContentType = ContentType
             });
 
             //Act
-            var controller = new PublisherController(journalRepository.Object, membershipRepository.Object);
+            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
             var fileContentResult = (FileContentResult)controller.GetFile(1);
 
             //Assert
@@ -142,11 +138,9 @@ namespace Medico.Web.Tests.Controllers
         {
             //Arrange
             var model = new JournalViewModel {Title="This Journal", Description = "This journal description", UserId=-99};
-            var journalRepository = new Mock<IJournalRepository>();
-            var membershipRepository = new Mock<IStaticMembershipService>();
 
             //Act
-            var controller = new PublisherController(journalRepository.Object, membershipRepository.Object);
+            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
             controller.ModelState.AddModelError("Model error","Incorrectly setup journal model");
             var result = (ViewResult)controller.Create(model);
 
@@ -169,16 +163,12 @@ namespace Medico.Web.Tests.Controllers
                 ContentType = ContentType
             };
 
-            var userMock = new Mock<MembershipUser>();
-            userMock.Setup(x => x.ProviderUserKey).Returns(1);
 
-            var journalRepository = new Mock<IJournalRepository>();
-            var membershipRepository = new Mock<IStaticMembershipService>();
-            membershipRepository.Setup(x => x.GetUser()).Returns(userMock.Object);
-            journalRepository.Setup(x => x.AddJournal(It.IsAny<Journal>())).Returns(new OperationStatus { Status = false });
+            _membershipRepository.Setup(x => x.GetUser()).Returns(_userMock.Object);
+            _journalRepository.Setup(x => x.AddJournal(It.IsAny<Journal>())).Returns(new OperationStatus { Status = false });
 
             //Act
-            var controller = new PublisherController(journalRepository.Object, membershipRepository.Object);
+            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
             controller.Create(model);
 
             //Assert
@@ -189,22 +179,17 @@ namespace Medico.Web.Tests.Controllers
         {
 
             //Arrange
-            var membershipRepository = new Mock<IStaticMembershipService>();
-            var userMock = new Mock<MembershipUser>();
-            userMock.Setup(x => x.ProviderUserKey).Returns(1);
-            membershipRepository.Setup(x => x.GetUser()).Returns(userMock.Object);
-            var journalRepository = new Mock<IJournalRepository>();
 
             var journal = new Journal
             {
                 Content = new byte[] { 1, 2, 3, 4, 5 },
                 ContentType = ContentType
             };
-            journalRepository.Setup(x => x.GetJournalById(It.IsAny<int>())).Returns(journal);
+            _journalRepository.Setup(x => x.GetJournalById(It.IsAny<int>())).Returns(journal);
             var journalViewModel = Mapper.Map<Journal, JournalViewModel>(journal);
 
             //Act
-            var controller = new PublisherController(journalRepository.Object, membershipRepository.Object);
+            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
             var model = (JournalViewModel)((ViewResult)controller.Delete(1)).Model;
 
             //Assert
@@ -218,23 +203,18 @@ namespace Medico.Web.Tests.Controllers
         {
 
             //Arrange
-            var membershipRepository = new Mock<IStaticMembershipService>();
-            var userMock = new Mock<MembershipUser>();
-            userMock.Setup(x => x.ProviderUserKey).Returns(1);
-            membershipRepository.Setup(x => x.GetUser()).Returns(userMock.Object);
-            var journalRepository = new Mock<IJournalRepository>();
 
             var journal = new Journal
             {
                 Content = new byte[] { 1, 2, 3, 4, 5 },
                 ContentType = ContentType
             };
-            journalRepository.Setup(x => x.DeleteJournal(It.IsAny<Journal>())).Returns(new OperationStatus { Status = false });
+            _journalRepository.Setup(x => x.DeleteJournal(It.IsAny<Journal>())).Returns(new OperationStatus { Status = false });
 
             var journalViewModel = Mapper.Map<Journal, JournalViewModel>(journal);
 
             //Act
-            var controller = new PublisherController(journalRepository.Object, membershipRepository.Object);
+            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
             controller.Delete(journalViewModel);
 
             //Assert
@@ -246,23 +226,18 @@ namespace Medico.Web.Tests.Controllers
         {
 
             //Arrange
-            var membershipRepository = new Mock<IStaticMembershipService>();
-            var userMock = new Mock<MembershipUser>();
-            userMock.Setup(x => x.ProviderUserKey).Returns(1);
-            membershipRepository.Setup(x => x.GetUser()).Returns(userMock.Object);
-            var journalRepository = new Mock<IJournalRepository>();
 
             var journal = new Journal
             {
                 Content = new byte[] { 1, 2, 3, 4, 5 },
                 ContentType = ContentType
             };
-            journalRepository.Setup(x => x.DeleteJournal(It.IsAny<Journal>())).Returns(new OperationStatus { Status = true });
+            _journalRepository.Setup(x => x.DeleteJournal(It.IsAny<Journal>())).Returns(new OperationStatus { Status = true });
 
             var journalViewModel = Mapper.Map<Journal, JournalViewModel>(journal);
 
             //Act
-            var controller = new PublisherController(journalRepository.Object, membershipRepository.Object);
+            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
             var result = (RedirectToRouteResult)controller.Delete(journalViewModel);
 
             //Assert
@@ -274,22 +249,17 @@ namespace Medico.Web.Tests.Controllers
         {
 
             //Arrange
-            var membershipRepository = new Mock<IStaticMembershipService>();
-            var userMock = new Mock<MembershipUser>();
-            userMock.Setup(x => x.ProviderUserKey).Returns(1);
-            membershipRepository.Setup(x => x.GetUser()).Returns(userMock.Object);
-            var journalRepository = new Mock<IJournalRepository>();
 
             var journal = new Journal
             {
                 Content = new byte[] { 1, 2, 3, 4, 5 },
                 ContentType = ContentType
             };
-            journalRepository.Setup(x => x.GetJournalById(It.IsAny<int>())).Returns(journal);
+            _journalRepository.Setup(x => x.GetJournalById(It.IsAny<int>())).Returns(journal);
             var journalUpdateViewModel = Mapper.Map<Journal, JournalUpdateViewModel>(journal);
 
             //Act
-            var controller = new PublisherController(journalRepository.Object, membershipRepository.Object);
+            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
             var model = (JournalUpdateViewModel)((ViewResult)controller.Edit(1)).Model;
 
             //Assert
@@ -303,24 +273,18 @@ namespace Medico.Web.Tests.Controllers
         {
 
             //Arrange
-            Mapper.CreateMap<Journal, JournalViewModel>();
-            var membershipRepository = new Mock<IStaticMembershipService>();
-            var userMock = new Mock<MembershipUser>();
-            userMock.Setup(x => x.ProviderUserKey).Returns(1);
-            membershipRepository.Setup(x => x.GetUser()).Returns(userMock.Object);
-            var journalRepository = new Mock<IJournalRepository>();
 
             var journal = new Journal
             {
                 Content = new byte[] { 1, 2, 3, 4, 5 },
                 ContentType = ContentType
             };
-            journalRepository.Setup(x => x.UpdateJournal(It.IsAny<Journal>())).Returns(new OperationStatus { Status = false });
+            _journalRepository.Setup(x => x.UpdateJournal(It.IsAny<Journal>())).Returns(new OperationStatus { Status = false });
 
             var journalViewModel = Mapper.Map<Journal, JournalUpdateViewModel>(journal);
 
             //Act
-            var controller = new PublisherController(journalRepository.Object, membershipRepository.Object);
+            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
             controller.Edit(journalViewModel);
 
             //Assert
@@ -332,24 +296,18 @@ namespace Medico.Web.Tests.Controllers
         {
 
             //Arrange
-            Mapper.CreateMap<Journal, JournalViewModel>();
-            var membershipRepository = new Mock<IStaticMembershipService>();
-            var userMock = new Mock<MembershipUser>();
-            userMock.Setup(x => x.ProviderUserKey).Returns(1);
-            membershipRepository.Setup(x => x.GetUser()).Returns(userMock.Object);
-            var journalRepository = new Mock<IJournalRepository>();
 
             var journal = new Journal
             {
                 Content = new byte[] { 1, 2, 3, 4, 5 },
                 ContentType = ContentType
             };
-            journalRepository.Setup(x => x.UpdateJournal(It.IsAny<Journal>())).Returns(new OperationStatus { Status = true });
+            _journalRepository.Setup(x => x.UpdateJournal(It.IsAny<Journal>())).Returns(new OperationStatus { Status = true });
 
             var journalViewModel = Mapper.Map<Journal, JournalUpdateViewModel>(journal);
 
             //Act
-            var controller = new PublisherController(journalRepository.Object, membershipRepository.Object);
+            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
             var result = (RedirectToRouteResult)controller.Edit(journalViewModel);
 
             //Assert

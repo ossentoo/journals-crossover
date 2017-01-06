@@ -19,118 +19,17 @@ namespace Medico.Web.Tests.Repositories
         private UserProfile _user2;
         private IQueryable<Journal> _journals;
         private const string ContentType = "application/pdf";
-        private const string ThirdJournalTitle = "3rd Journal";
-        private const string ThirdJournalDescription = "3rd journal description";
 
         [TestInitialize]
         public void SubscriptionRepositoryInitialize()
         {
-            var modifiedDate = new DateTime(2016, 11, 01);
 
-            #region setupData
-            _journals = new List<Journal>  {
-                new Journal {
-                    Id = 1,
-                    Title = "1st Journal",
-                    Description = "1st journal description",
-                    UserId = 1,
-                    Content = new byte[] { 1, 2, 3, 4, 5 },
-                    ContentType = ContentType,
-                    ModifiedDate = modifiedDate
-                },
-                new Journal {
-                    Id = 2,
-                    Title = "2nd Journal",
-                    Description = "2nd journal description",
-                    UserId = 1,
-                    Content = new byte[] { 1, 2, 3, 4, 5 },
-                    ContentType = ContentType,
-                    ModifiedDate = modifiedDate
-                },
-                new Journal {
-                    Id = 3,
-                    Title = ThirdJournalTitle,
-                    Description = ThirdJournalDescription,
-                    UserId = 1,
-                    Content = new byte[] { 1, 2, 3, 4, 5 },
-                    ContentType = ContentType,
-                    ModifiedDate = modifiedDate
-                },
-                new Journal {
-                    Id = 4,
-                    Title = "4th Journal",
-                    Description = "4th journal description",
-                    UserId = 2,
-                    Content = new byte[] { 1, 2, 3, 4, 5 },
-                    ContentType = ContentType,
-                    ModifiedDate = modifiedDate
-                },
-                new Journal {
-                    Id = 5,
-                    Title = "5th Journal",
-                    Description = "5th journal description",
-                    UserId = 2,
-                    Content = new byte[] { 1, 2, 3, 4, 5 },
-                    ContentType = ContentType,
-                    ModifiedDate = modifiedDate
-                }
-            }.AsQueryable();
-
-            var user1 = new UserProfile {UserId=1, UserName = "firstUser"};
-            _user2 = new UserProfile {UserId=2, UserName = "secondUser" };
-
-            var journal1 = _journals.ElementAt(0);
-            var journal2 = _journals.ElementAt(1);
-            var journal3 = _journals.ElementAt(2);
-            var journal4 = _journals.ElementAt(3);
-            var journal5 = _journals.ElementAt(4);
-
-            _subscriptions = new List<Subscription>
-            {
-                new Subscription
-                {
-                    Id= 1,
-                    Journal = journal1,
-                    JournalId = journal1.Id,
-                    User=user1,
-                    UserId = user1.UserId
-                },
-                new Subscription
-                {
-                    Id= 2,
-                    Journal = journal2,
-                    JournalId = journal2.Id,
-                    User=user1,
-                    UserId = user1.UserId
-                },
-                new Subscription
-                {
-                    Id= 3,
-                    Journal = journal3,
-                    JournalId = journal3.Id,
-                    User=_user2,
-                    UserId = _user2.UserId
-                },
-                new Subscription
-                {
-                    Id= 4,
-                    Journal = journal4,
-                    JournalId = journal4.Id,
-                    User=_user2,
-                    UserId = _user2.UserId
-                },
-                new Subscription
-                {
-                    Id= 5,
-                    Journal = journal5,
-                    JournalId = journal5.Id,
-                    User=_user2,
-                    UserId = _user2.UserId
-                }
-            }.AsQueryable();
-            #endregion
+            _subscriptions = MockData.Subscriptions.AsQueryable();
+            _journals = MockData.Journals.AsQueryable();
+            _user2 = MockData.Users.Last();
             _context = SetupSubscriptionSet();
         }
+
 
         [TestMethod]
         public void GetJournals_WithData_ReturnsListWithData()

@@ -16,11 +16,13 @@ namespace Medico.Web.Controllers
     {
         private IJournalRepository _journalRepository;
         private readonly ISubscriptionRepository _subscriptionRepository;
+        private readonly IStaticMembershipService _membershipService;
 
-        public SubscriberController(IJournalRepository journalRepo, ISubscriptionRepository subscriptionRepo)
+        public SubscriberController(IJournalRepository journalRepo, ISubscriptionRepository subscriptionRepo, IStaticMembershipService membershipService)
         {
             _journalRepository = journalRepo;
             _subscriptionRepository = subscriptionRepo;
+            _membershipService = membershipService;
         }
 
         public ActionResult Index()
@@ -30,7 +32,7 @@ namespace Medico.Web.Controllers
             if (journals == null)
                 return View();
 
-            var userId = (int)Membership.GetUser().ProviderUserKey;
+            var userId = (int)_membershipService.GetUser().ProviderUserKey;
             var subscriptions = _subscriptionRepository.GetJournalsForSubscriber(userId);
 
             var subscriberModel = Mapper.Map<List<Journal>, List<SubscriptionViewModel>>(journals);
@@ -43,18 +45,18 @@ namespace Medico.Web.Controllers
             return View(subscriberModel);
         }
 
-        public ActionResult Subscribe(int Id)
+        public ActionResult Subscribe(int id)
         {
-            var opStatus = _subscriptionRepository.AddSubscription(Id, (int)Membership.GetUser().ProviderUserKey);
+            var opStatus = _subscriptionRepository.AddSubscription(id, (int)_membershipService.GetUser().ProviderUserKey);
             if (!opStatus.Status)
                 throw new System.Web.Http.HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound));
 
             return RedirectToAction("Index");
         }
 
-        public ActionResult UnSubscribe(int Id)
+        public ActionResult UnSubscribe(int id)
         {
-            var opStatus = _subscriptionRepository.UnSubscribe(Id, (int)Membership.GetUser().ProviderUserKey);
+            var opStatus = _subscriptionRepository.UnSubscribe(id, (int)_membershipService.GetUser().ProviderUserKey);
             if (!opStatus.Status)
                 throw new System.Web.Http.HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound));
 
