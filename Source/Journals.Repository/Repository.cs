@@ -2,16 +2,18 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Linq.Expressions;
 using Medico.Model;
 
 namespace Medico.Repository
 {
     public interface IRepository<T>
     {
-        IEnumerable<T> Get(Func<T, bool> @where);
+        IQueryable<T> Get(Func<T, bool> @where);
         void Add(T entity);
         void Update(T entity);
         void Delete(T entity);
+        void Delete(IEnumerable<T> entities);
     }
 
     public class Repository<T> : IRepository<T> where T : BaseEntity
@@ -26,14 +28,14 @@ namespace Medico.Repository
 
         protected virtual IDbSet<T> Entities => _entities ?? (_entities = Context.Set<T>());
 
-        public IEnumerable<T> Get(Func<T, bool> @where)
+        public IQueryable<T> Get(Func<T, bool> @where)
         {
             IQueryable<T> dbQuery = Context.Set<T>();
 
             var list = dbQuery.Where(@where);
 
             //Apply eager loading
-            return list;
+            return list.AsQueryable();
         }
 
         public virtual void Add(T entity)
@@ -61,6 +63,19 @@ namespace Medico.Repository
                 throw new ArgumentNullException("entity");
 
             Entities.Remove(entity);
+            Context.SaveChanges();
+        }
+
+        public virtual void Delete(IEnumerable<T> entities)
+        {
+            if (entities == null || !entities.Any())
+                throw new ArgumentNullException("entity");
+
+            foreach (var entity in entities)
+            {
+                Entities.Remove(entity);
+            }
+
             Context.SaveChanges();
         }
     }

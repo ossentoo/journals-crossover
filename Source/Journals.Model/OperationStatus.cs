@@ -28,8 +28,8 @@ namespace Journals.Model
             {
                 opStatus.ExceptionMessage = ex.Message;
                 opStatus.ExceptionStackTrace = ex.StackTrace;
-                opStatus.ExceptionInnerMessage = (ex.InnerException == null) ? null : ex.InnerException.Message;
-                opStatus.ExceptionInnerStackTrace = (ex.InnerException == null) ? null : ex.InnerException.StackTrace;
+                opStatus.ExceptionInnerMessage = ex.InnerException?.Message;
+                opStatus.ExceptionInnerStackTrace = ex.InnerException?.StackTrace;
             }
             return opStatus;
         }
