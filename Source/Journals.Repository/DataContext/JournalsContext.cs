@@ -1,18 +1,13 @@
 ﻿using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
-using Journals.Model;
 using Medico.Model;
 
 namespace Medico.Repository.DataContext
 {
     public class JournalsContext : DbContext, IDbContext
     {
-        public JournalsContext(string connectionString)
-            : base(connectionString)
-        {
-        }
-
         public JournalsContext()
+            :base("name=JournalsDB")
         {
             
         }

@@ -6,7 +6,7 @@ namespace Medico.Repository.DataContext
     {
         public SimpleMembershipInitializer()
         {
-            using (var context1 = new JournalsContext("name=JournalsDB"))
+            using (var context1 = new JournalsContext())
                 context1.Journals.Find(1);
 
             using (var context = new UsersContext())
