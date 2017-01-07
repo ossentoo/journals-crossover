@@ -80,7 +80,7 @@ namespace Medico.Web.Tests.Repositories
         }
 
         [TestMethod]
-        public void GetJournalIssuesById_Returns_JournalIssues()
+        public void GetJournalIssuesById_Returns_Issues()
         {
 
             var repository = new JournalRepository(_context.Object);
@@ -89,7 +89,7 @@ namespace Medico.Web.Tests.Repositories
             Assert.AreEqual(3, issues.Count());
             Assert.AreEqual(2, issues.ElementAt(1).Id);
             Assert.AreEqual(1, issues.ElementAt(1).JournalId);
-            Assert.AreEqual(ThirdJournalTitle, issues.ElementAt(1).FileName);
+            Assert.AreEqual("file1.txt2", issues.ElementAt(1).FileName);
         }
 
         [TestMethod]
