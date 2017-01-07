@@ -26,7 +26,7 @@ namespace Medico.Model
 
         [ForeignKey("UserId")]
         public UserProfile User { get; set; }
-        public virtual Collection<JournalIssue> Issues { get; set; }
+        public virtual Collection<Issue> Issues { get; set; }
         public int UserId { get; set; }
     }
 }

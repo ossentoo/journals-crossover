@@ -6,6 +6,7 @@ using System.Web.Security;
 using Journals.Model;
 using Medico.Model;
 using Medico.Repository;
+using Medico.Repository.Interfaces;
 using Medico.Web.Controllers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;

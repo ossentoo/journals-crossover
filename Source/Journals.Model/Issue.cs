@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Medico.Model
 {
-    public class JournalIssue: BaseEntity
+    public class Issue: BaseEntity
     {
         public string FileName { get; set; }
         public string ContentType { get; set; }

@@ -2,7 +2,7 @@
 using Journals.Model;
 using Medico.Model;
 
-namespace Medico.Repository
+namespace Medico.Repository.Interfaces
 {
     public interface IJournalRepository
     {
@@ -15,5 +15,7 @@ namespace Medico.Repository
         OperationStatus DeleteJournal(Journal journal);
 
         OperationStatus UpdateJournal(Journal journal);
+
+        IEnumerable<Issue> GetJournalIssues(int journalId);
     }
 }

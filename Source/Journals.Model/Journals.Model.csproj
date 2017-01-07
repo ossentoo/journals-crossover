@@ -47,8 +47,9 @@
   <ItemGroup>
     <Compile Include="AccountModels.cs" />
     <Compile Include="Helpers\AutoMapperHelper.cs" />
-    <Compile Include="JournalIssue.cs" />
+    <Compile Include="Issue.cs" />
     <Compile Include="Journal.cs" />
+    <Compile Include="JournalIssueViewModel.cs" />
     <Compile Include="JournalViewModel.cs" />
     <Compile Include="OperationStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

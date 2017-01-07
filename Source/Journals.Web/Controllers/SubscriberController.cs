@@ -8,6 +8,7 @@ using AutoMapper;
 using Journals.Model;
 using Medico.Model;
 using Medico.Repository;
+using Medico.Repository.Interfaces;
 
 namespace Medico.Web.Controllers
 {

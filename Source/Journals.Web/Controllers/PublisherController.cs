@@ -4,9 +4,9 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Mvc;
 using AutoMapper;
-using Journals.Model;
 using Medico.Model;
 using Medico.Repository;
+using Medico.Repository.Interfaces;
 using Medico.Web.Filters;
 using Medico.Web.Helpers;
 
@@ -31,6 +31,13 @@ namespace Medico.Web.Controllers
             var allJournals = _journalRepository.GetAllJournals(userId);
             var journals = Mapper.Map<IEnumerable<Journal>, IEnumerable<JournalViewModel>>(allJournals);
             return View((List<JournalViewModel>) journals);
+        }
+
+        public ActionResult Issues(int id)
+        {
+            var journalIssues = _journalRepository.GetJournalIssues(id);
+            var issueViewModels = Mapper.Map<IEnumerable<Issue>, IEnumerable<JournalIssueViewModel>>(journalIssues);
+            return View((List<JournalIssueViewModel>)issueViewModels);
         }
 
         public ActionResult Create()
@@ -89,9 +96,9 @@ namespace Medico.Web.Controllers
             return RedirectToAction("Index");
         }
 
-        public ActionResult Edit(int Id)
+        public ActionResult Edit(int id)
         {
-            var journal = _journalRepository.GetJournalById(Id);
+            var journal = _journalRepository.GetJournalById(id);
 
             var selectedJournal = Mapper.Map<Journal, JournalUpdateViewModel>(journal);
 

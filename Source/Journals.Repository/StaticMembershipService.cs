@@ -1,4 +1,5 @@
 ﻿using System.Web.Security;
+using Medico.Repository.Interfaces;
 using WebMatrix.WebData;
 
 namespace Medico.Repository

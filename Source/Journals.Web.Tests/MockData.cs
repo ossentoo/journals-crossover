@@ -12,12 +12,9 @@ namespace Medico.Web.Tests
         public static string ContentType => "application/pdf";
         private const string ThirdJournalTitle = "3rd Journal";
         private const string ThirdJournalDescription = "3rd journal description";
-
         public static List<Journal> Journals { get; private set; }
         public static List<Subscription> Subscriptions { get; private set; }
         public static List<UserProfile> Users { get; private set; }
-
-        
 
         static MockData()
         {
@@ -34,7 +31,12 @@ namespace Medico.Web.Tests
                     Description = "1st journal description",
                     UserId = 1,
                     ModifiedDate = modifiedDate,
-                    Issues = new Collection<JournalIssue> {new JournalIssue {Id=1, JournalId = 1, ModifiedDate = modifiedDate, Content = data, ContentType = ContentType, FileName = fileName } }
+                    Issues = new Collection<Issue>
+                    {
+                        new Issue {Id=1, JournalId = 1, ModifiedDate = modifiedDate, Content = data, ContentType = ContentType, FileName = fileName },
+                        new Issue {Id=2, JournalId = 1, ModifiedDate = modifiedDate.AddDays(1), Content = data, ContentType = ContentType, FileName = $"{fileName}2" },
+                        new Issue {Id=3, JournalId = 1, ModifiedDate = modifiedDate.AddDays(1), Content = data, ContentType = ContentType, FileName = $"{fileName}3" }
+                    }
                 },
                 new Journal
                 {
@@ -43,7 +45,7 @@ namespace Medico.Web.Tests
                     Description = "2nd journal description",
                     UserId = 1,
                     ModifiedDate = modifiedDate,
-                    Issues = new Collection<JournalIssue> {new JournalIssue {Id=2, JournalId = 2, ModifiedDate = modifiedDate, Content = data, ContentType = ContentType, FileName = fileName } }
+                    Issues = new Collection<Issue> {new Issue {Id=2, JournalId = 2, ModifiedDate = modifiedDate, Content = data, ContentType = ContentType, FileName = fileName } }
                 },
                 new Journal
                 {
@@ -52,7 +54,7 @@ namespace Medico.Web.Tests
                     Description = ThirdJournalDescription,
                     UserId = 1,
                     ModifiedDate = modifiedDate,
-                    Issues = new Collection<JournalIssue> {new JournalIssue {Id=3, JournalId = 3, ModifiedDate = modifiedDate, Content = data, ContentType = ContentType, FileName = fileName } }
+                    Issues = new Collection<Issue> {new Issue {Id=3, JournalId = 3, ModifiedDate = modifiedDate, Content = data, ContentType = ContentType, FileName = fileName } }
                 },
                 new Journal
                 {
@@ -61,7 +63,7 @@ namespace Medico.Web.Tests
                     Description = "4th journal description",
                     UserId = 2,
                     ModifiedDate = modifiedDate,
-                    Issues = new Collection<JournalIssue> {new JournalIssue {Id=4, JournalId = 4, ModifiedDate = modifiedDate, Content = data, ContentType = ContentType, FileName = fileName } }
+                    Issues = new Collection<Issue> {new Issue {Id=4, JournalId = 4, ModifiedDate = modifiedDate, Content = data, ContentType = ContentType, FileName = fileName } }
                 },
                 new Journal
                 {
@@ -70,7 +72,7 @@ namespace Medico.Web.Tests
                     Description = "5th journal description",
                     UserId = 2,
                     ModifiedDate = modifiedDate,
-                    Issues = new Collection<JournalIssue> {new JournalIssue {Id=5, JournalId = 5, ModifiedDate = modifiedDate, Content = data, ContentType = ContentType, FileName = fileName } }
+                    Issues = new Collection<Issue> {new Issue {Id=5, JournalId = 5, ModifiedDate = modifiedDate, Content = data, ContentType = ContentType, FileName = fileName } }
                 }
             };
 

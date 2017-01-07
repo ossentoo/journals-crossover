@@ -7,6 +7,7 @@ using Journals.Model;
 using Medico.Model;
 using Medico.Repository;
 using Medico.Repository.DataContext;
+using Medico.Repository.Repositories;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -31,7 +32,7 @@ namespace Medico.Web.Tests.Repositories
             {
                 Title = Title,
                 Description = Description,
-                Issues = new Collection<JournalIssue> { new JournalIssue { Id = 1, JournalId = 1, ModifiedDate = new DateTime(2016,01,01),
+                Issues = new Collection<Issue> { new Issue { Id = 1, JournalId = 1, ModifiedDate = new DateTime(2016,01,01),
                     Content = new byte[] { 1, 2, 3, 4, 5 }, ContentType = ContentType, FileName = "filename.txt" } },
 
             };

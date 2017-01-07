@@ -2,7 +2,7 @@
 using Journals.Model;
 using Medico.Model;
 
-namespace Medico.Repository
+namespace Medico.Repository.Interfaces
 {
     public interface ISubscriptionRepository
     {

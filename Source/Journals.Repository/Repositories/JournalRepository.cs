@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using Journals.Model;
 using Medico.Model;
+using Medico.Repository.Interfaces;
 
-namespace Medico.Repository
+namespace Medico.Repository.Repositories
 {
 
     public interface IDbContext
@@ -24,6 +24,13 @@ namespace Medico.Repository
         public IEnumerable<Journal> GetAllJournals(int userId)
         {
             return Get(u=>u.UserId == userId);
+        }
+
+        public IEnumerable<Issue> GetJournalIssues(int journalId)
+        {
+            var journal = Get(j => j.Id == journalId).First();
+
+            return journal?.Issues;
         }
 
         public OperationStatus AddJournal(Journal newJournal)

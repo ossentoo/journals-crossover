@@ -1,6 +1,7 @@
 ﻿using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using Medico.Model;
+using Medico.Repository.Repositories;
 
 namespace Medico.Repository.DataContext
 {
@@ -13,7 +14,7 @@ namespace Medico.Repository.DataContext
         }
 
         public virtual DbSet<Journal> Journals { get; set; }
-        public virtual DbSet<JournalIssue> JournalIssues { get; set; }
+        public virtual DbSet<Issue> JournalIssues { get; set; }
         public virtual DbSet<Subscription> Subscriptions { get; set; }
         public bool IsDisposed { get; set; }
 
@@ -23,7 +24,7 @@ namespace Medico.Repository.DataContext
             base.Configuration.LazyLoadingEnabled = false;
             modelBuilder.Entity<Journal>().ToTable("Journals");
             modelBuilder.Entity<Subscription>().ToTable("Subscriptions");
-            modelBuilder.Entity<JournalIssue>().ToTable("JournalIssues");
+            modelBuilder.Entity<Issue>().ToTable("JournalIssues");
             base.OnModelCreating(modelBuilder);
         }
 

@@ -1,6 +1,8 @@
 ﻿using System.Data.Entity;
 using Medico.Repository;
 using Medico.Repository.DataContext;
+using Medico.Repository.Interfaces;
+using Medico.Repository.Repositories;
 using Medico.Web.Controllers;
 using Microsoft.Practices.Unity;
 

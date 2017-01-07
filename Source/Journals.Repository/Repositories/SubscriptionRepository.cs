@@ -4,8 +4,9 @@ using System.Data.Entity;
 using System.Linq;
 using Journals.Model;
 using Medico.Model;
+using Medico.Repository.Interfaces;
 
-namespace Medico.Repository
+namespace Medico.Repository.Repositories
 {
     public class SubscriptionRepository : Repository<Subscription>, ISubscriptionRepository
     {
