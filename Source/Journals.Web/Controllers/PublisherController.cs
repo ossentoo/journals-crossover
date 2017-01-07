@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Mvc;
@@ -29,7 +30,7 @@ namespace Medico.Web.Controllers
 
             var allJournals = _journalRepository.GetAllJournals(userId);
             var journals = Mapper.Map<IEnumerable<Journal>, IEnumerable<JournalViewModel>>(allJournals);
-            return View(journals);
+            return View((List<JournalViewModel>) journals);
         }
 
         public ActionResult Create()
@@ -37,13 +38,14 @@ namespace Medico.Web.Controllers
             return View();
         }
 
-        public ActionResult GetFile(int Id)
+        public ActionResult GetFile(int id, int issueId)
         {
-            Journal j = _journalRepository.GetJournalById(Id);
+            var j = _journalRepository.GetJournalById(id);
             if (j == null)
                 throw new System.Web.Http.HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound));
 
-            return File(j.Content, j.ContentType);
+            var issue = j.Issues.First(x => x.Id == issueId);
+            return File(issue.Content, issue.ContentType);
         }
 
         [HttpPost]
@@ -53,7 +55,7 @@ namespace Medico.Web.Controllers
             if (ModelState.IsValid)
             {
                 var newJournal = Mapper.Map<JournalViewModel, Journal>(journal);
-                JournalHelper.PopulateFile(journal.File, newJournal);
+                JournalHelper.PopulateFile(journal.File, newJournal, newJournal.Issues.First());
 
                 newJournal.UserId = (int)_membershipService.GetUser().ProviderUserKey;
 
@@ -103,7 +105,7 @@ namespace Medico.Web.Controllers
             if (ModelState.IsValid)
             {
                 var selectedJournal = Mapper.Map<JournalUpdateViewModel, Journal>(journal);
-                JournalHelper.PopulateFile(journal.File, selectedJournal);
+                JournalHelper.PopulateFile(journal.File, selectedJournal, selectedJournal.Issues.First());
 
                 var opStatus = _journalRepository.UpdateJournal(selectedJournal);
                 if (!opStatus.Status)

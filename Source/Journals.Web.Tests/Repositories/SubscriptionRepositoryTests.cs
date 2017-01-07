@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data.Entity;
 using System.Linq;
 using Journals.Model;
@@ -19,6 +20,22 @@ namespace Medico.Web.Tests.Repositories
         private UserProfile _user2;
         private IQueryable<Journal> _journals;
         private const string ContentType = "application/pdf";
+
+        private const string Title = "6th Journal";
+        private const string Description = "6th journal description";
+        private readonly Journal _journalItem;
+
+        public SubscriptionRepositoryTests()
+        {
+            _journalItem = new Journal
+            {
+                Title = Title,
+                Description = Description,
+                Issues = new Collection<JournalIssue> { new JournalIssue { Id = 1, JournalId = 1, ModifiedDate = new DateTime(2016,01,01),
+                    Content = new byte[] { 1, 2, 3, 4, 5 }, ContentType = ContentType, FileName = "filename.txt" } },
+
+            };
+        }
 
         [TestInitialize]
         public void SubscriptionRepositoryInitialize()
@@ -62,23 +79,9 @@ namespace Medico.Web.Tests.Repositories
         [TestMethod]
         public void AddSubscription_ReturnsStatus_True()
         {
-            const string title = "6th Journal";
-            const string description = "6th journal description";
-
             var userProfile = new UserProfile {UserId = 3, UserName = "3rd user"};
 
-            var journal = new Journal
-            {
-                Id = 6,
-                Title = title,
-                Description = description,
-                UserId = 6,
-                User = userProfile,
-                Content = new byte[] { 1, 2, 3, 4, 5 },
-                ContentType = ContentType,
-                ModifiedDate = new DateTime(2017, 01, 01)
-            };
-            var journals = new List<Journal>(_journals) { journal };
+            var journals = new List<Journal>(_journals) { _journalItem };
             _journals = journals.AsQueryable();
 
             var repository = new SubscriptionRepository(_context.Object);
@@ -125,7 +128,6 @@ namespace Medico.Web.Tests.Repositories
             Assert.AreEqual(4, _subscriptions.Count());
             Assert.IsNull(_subscriptions.FirstOrDefault(x => x.Id == 4));
         }
-
 
         private Mock<JournalsContext> SetupSubscriptionSet()
         {

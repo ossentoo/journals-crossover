@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Mvc;
@@ -20,13 +21,24 @@ namespace Medico.Web.Tests.Controllers
         private readonly Mock<IStaticMembershipService> _membershipRepository;
         private readonly Mock<MembershipUser> _userMock;
         private readonly Mock<IJournalRepository> _journalRepository;
+        private readonly Journal _journalItem;
         private const string ContentType = "application/pdf";
 
         public PublisherControllerTests()
         {
+            const string title = "6th Journal";
+            const string description = "6th journal description";
             _membershipRepository = new Mock<IStaticMembershipService>();
             _userMock = new Mock<MembershipUser>();
             _journalRepository = new Mock<IJournalRepository>();
+            _journalItem = new Journal
+            {
+                Title = title,
+                Description = description,
+                Issues = new Collection<JournalIssue> { new JournalIssue { Id = 1, JournalId = 1, ModifiedDate = new DateTime(2016,01,01),
+                    Content = new byte[] { 1, 2, 3, 4, 5 }, ContentType = ContentType, FileName = "filename.txt" } },
+
+            };
 
         }
 
@@ -36,18 +48,12 @@ namespace Medico.Web.Tests.Controllers
             _userMock.Setup(x => x.ProviderUserKey).Returns(1);
             _membershipRepository.Setup(x => x.GetUser()).Returns(_userMock.Object);
 
-            _journalRepository.Setup(x => x.GetAllJournals((int)_userMock.Object.ProviderUserKey)).Returns(new List<Journal>(){
-                    new Journal{ Id=1, Description="TestDesc", FileName="TestFilename.pdf", Title="Tester", UserId=1, ModifiedDate= DateTime.Now},
-                    new Journal{ Id=1, Description="TestDesc2", FileName="TestFilename2.pdf", Title="Tester2", UserId=1, ModifiedDate = DateTime.Now}
-            });
+            _journalRepository.Setup(x => x.GetAllJournals((int)_userMock.Object.ProviderUserKey)).Returns(MockData.Journals);
         }
 
         [TestMethod]
         public void Index_Returns_All_Journals()
         {
-
-            //Arrange
-
 
             //Act
             var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
@@ -55,7 +61,7 @@ namespace Medico.Web.Tests.Controllers
             var model = actionResult.Model as IEnumerable<JournalViewModel>;
 
             //Assert
-            Assert.AreEqual(2, model.Count());
+            Assert.AreEqual(5, model.Count());
             _journalRepository.Verify(x => x.GetAllJournals((int)_userMock.Object.ProviderUserKey), Times.AtLeastOnce);
         }
 
@@ -81,14 +87,11 @@ namespace Medico.Web.Tests.Controllers
             _membershipRepository.Setup(x => x.GetUser()).Returns(_userMock.Object);
 
             var contentType = "application/pdf";
-            _journalRepository.Setup(x => x.GetJournalById(It.IsInRange(1,10, Range.Inclusive))).Returns(new Journal {
-                Content = new byte[] { 1, 2, 3, 4, 5 },
-                ContentType = contentType
-            });
+            _journalRepository.Setup(x => x.GetJournalById(It.IsInRange(1,10, Range.Inclusive))).Returns(_journalItem);
 
             //Act
             var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
-            var fileContentResult = (FileContentResult)controller.GetFile(1);
+            var fileContentResult = (FileContentResult)controller.GetFile(1, 1);
 
             //Assert
             Assert.AreEqual(5, fileContentResult.FileContents.Length);
@@ -100,7 +103,6 @@ namespace Medico.Web.Tests.Controllers
         [ExpectedException(typeof(HttpResponseException))]
         public void GetFile_Returns_Exception()
         {
-
             //Arrange
             var journalRepository = new Mock<IJournalRepository>();
 
@@ -108,7 +110,7 @@ namespace Medico.Web.Tests.Controllers
 
             //Act
             var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
-            controller.GetFile(0);
+            controller.GetFile(0, 1);
         }
 
         [TestMethod]
@@ -117,15 +119,11 @@ namespace Medico.Web.Tests.Controllers
 
             //Arrange
 
-            _journalRepository.Setup(x => x.GetJournalById(It.IsInRange(1, 10, Range.Inclusive))).Returns(new Journal
-            {
-                Content = new byte[] { 1, 2, 3, 4, 5 },
-                ContentType = ContentType
-            });
+            _journalRepository.Setup(x => x.GetJournalById(It.IsInRange(1, 10, Range.Inclusive))).Returns(_journalItem);
 
             //Act
             var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
-            var fileContentResult = (FileContentResult)controller.GetFile(1);
+            var fileContentResult = (FileContentResult)controller.GetFile(1, 1);
 
             //Assert
             Assert.AreEqual(5, fileContentResult.FileContents.Length);
@@ -177,16 +175,8 @@ namespace Medico.Web.Tests.Controllers
         [TestMethod]
         public void Delete_Returns_Journal()
         {
-
-            //Arrange
-
-            var journal = new Journal
-            {
-                Content = new byte[] { 1, 2, 3, 4, 5 },
-                ContentType = ContentType
-            };
-            _journalRepository.Setup(x => x.GetJournalById(It.IsAny<int>())).Returns(journal);
-            var journalViewModel = Mapper.Map<Journal, JournalViewModel>(journal);
+            _journalRepository.Setup(x => x.GetJournalById(It.IsAny<int>())).Returns(_journalItem);
+            var journalViewModel = Mapper.Map<Journal, JournalViewModel>(_journalItem);
 
             //Act
             var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
@@ -201,40 +191,22 @@ namespace Medico.Web.Tests.Controllers
         [ExpectedException(typeof(HttpResponseException))]
         public void DeletePost_Returns_Exception()
         {
-
-            //Arrange
-
-            var journal = new Journal
-            {
-                Content = new byte[] { 1, 2, 3, 4, 5 },
-                ContentType = ContentType
-            };
             _journalRepository.Setup(x => x.DeleteJournal(It.IsAny<Journal>())).Returns(new OperationStatus { Status = false });
 
-            var journalViewModel = Mapper.Map<Journal, JournalViewModel>(journal);
+            var journalViewModel = Mapper.Map<Journal, JournalViewModel>(_journalItem);
 
             //Act
             var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
             controller.Delete(journalViewModel);
-
-            //Assert
 
         }
 
         [TestMethod]
         public void DeletePost_Returns_Index()
         {
-
-            //Arrange
-
-            var journal = new Journal
-            {
-                Content = new byte[] { 1, 2, 3, 4, 5 },
-                ContentType = ContentType
-            };
             _journalRepository.Setup(x => x.DeleteJournal(It.IsAny<Journal>())).Returns(new OperationStatus { Status = true });
 
-            var journalViewModel = Mapper.Map<Journal, JournalViewModel>(journal);
+            var journalViewModel = Mapper.Map<Journal, JournalViewModel>(_journalItem);
 
             //Act
             var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
@@ -247,16 +219,8 @@ namespace Medico.Web.Tests.Controllers
         [TestMethod]
         public void Edit_Returns_Journal()
         {
-
-            //Arrange
-
-            var journal = new Journal
-            {
-                Content = new byte[] { 1, 2, 3, 4, 5 },
-                ContentType = ContentType
-            };
-            _journalRepository.Setup(x => x.GetJournalById(It.IsAny<int>())).Returns(journal);
-            var journalUpdateViewModel = Mapper.Map<Journal, JournalUpdateViewModel>(journal);
+            _journalRepository.Setup(x => x.GetJournalById(It.IsAny<int>())).Returns(_journalItem);
+            var journalUpdateViewModel = Mapper.Map<Journal, JournalUpdateViewModel>(_journalItem);
 
             //Act
             var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
@@ -271,40 +235,21 @@ namespace Medico.Web.Tests.Controllers
         [ExpectedException(typeof(HttpResponseException))]
         public void EditPost_Returns_Exception()
         {
-
-            //Arrange
-
-            var journal = new Journal
-            {
-                Content = new byte[] { 1, 2, 3, 4, 5 },
-                ContentType = ContentType
-            };
             _journalRepository.Setup(x => x.UpdateJournal(It.IsAny<Journal>())).Returns(new OperationStatus { Status = false });
 
-            var journalViewModel = Mapper.Map<Journal, JournalUpdateViewModel>(journal);
+            var journalViewModel = Mapper.Map<Journal, JournalUpdateViewModel>(_journalItem);
 
             //Act
             var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
             controller.Edit(journalViewModel);
-
-            //Assert
-
         }
 
         [TestMethod]
         public void EditPost_Returns_Index()
         {
-
-            //Arrange
-
-            var journal = new Journal
-            {
-                Content = new byte[] { 1, 2, 3, 4, 5 },
-                ContentType = ContentType
-            };
             _journalRepository.Setup(x => x.UpdateJournal(It.IsAny<Journal>())).Returns(new OperationStatus { Status = true });
 
-            var journalViewModel = Mapper.Map<Journal, JournalUpdateViewModel>(journal);
+            var journalViewModel = Mapper.Map<Journal, JournalUpdateViewModel>(_journalItem);
 
             //Act
             var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);

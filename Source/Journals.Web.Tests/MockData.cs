@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using Journals.Model;
 using Medico.Model;
 
@@ -7,7 +9,6 @@ namespace Medico.Web.Tests
 {
     public static class MockData
     {
-
         public static string ContentType => "application/pdf";
         private const string ThirdJournalTitle = "3rd Journal";
         private const string ThirdJournalDescription = "3rd journal description";
@@ -22,6 +23,8 @@ namespace Medico.Web.Tests
         {
             var modifiedDate = new DateTime(2016, 11, 01);
 
+            var data = new byte[] {1, 2, 3, 4, 5};
+            var fileName = "file1.txt";
             Journals = new List<Journal>
             {
                 new Journal
@@ -30,9 +33,8 @@ namespace Medico.Web.Tests
                     Title = "1st Journal",
                     Description = "1st journal description",
                     UserId = 1,
-                    Content = new byte[] {1, 2, 3, 4, 5},
-                    ContentType = ContentType,
-                    ModifiedDate = modifiedDate
+                    ModifiedDate = modifiedDate,
+                    Issues = new Collection<JournalIssue> {new JournalIssue {Id=1, JournalId = 1, ModifiedDate = modifiedDate, Content = data, ContentType = ContentType, FileName = fileName } }
                 },
                 new Journal
                 {
@@ -40,9 +42,8 @@ namespace Medico.Web.Tests
                     Title = "2nd Journal",
                     Description = "2nd journal description",
                     UserId = 1,
-                    Content = new byte[] {1, 2, 3, 4, 5},
-                    ContentType = ContentType,
-                    ModifiedDate = modifiedDate
+                    ModifiedDate = modifiedDate,
+                    Issues = new Collection<JournalIssue> {new JournalIssue {Id=2, JournalId = 2, ModifiedDate = modifiedDate, Content = data, ContentType = ContentType, FileName = fileName } }
                 },
                 new Journal
                 {
@@ -50,9 +51,8 @@ namespace Medico.Web.Tests
                     Title = ThirdJournalTitle,
                     Description = ThirdJournalDescription,
                     UserId = 1,
-                    Content = new byte[] {1, 2, 3, 4, 5},
-                    ContentType = ContentType,
-                    ModifiedDate = modifiedDate
+                    ModifiedDate = modifiedDate,
+                    Issues = new Collection<JournalIssue> {new JournalIssue {Id=3, JournalId = 3, ModifiedDate = modifiedDate, Content = data, ContentType = ContentType, FileName = fileName } }
                 },
                 new Journal
                 {
@@ -60,9 +60,8 @@ namespace Medico.Web.Tests
                     Title = "4th Journal",
                     Description = "4th journal description",
                     UserId = 2,
-                    Content = new byte[] {1, 2, 3, 4, 5},
-                    ContentType = ContentType,
-                    ModifiedDate = modifiedDate
+                    ModifiedDate = modifiedDate,
+                    Issues = new Collection<JournalIssue> {new JournalIssue {Id=4, JournalId = 4, ModifiedDate = modifiedDate, Content = data, ContentType = ContentType, FileName = fileName } }
                 },
                 new Journal
                 {
@@ -70,9 +69,8 @@ namespace Medico.Web.Tests
                     Title = "5th Journal",
                     Description = "5th journal description",
                     UserId = 2,
-                    Content = new byte[] {1, 2, 3, 4, 5},
-                    ContentType = ContentType,
-                    ModifiedDate = modifiedDate
+                    ModifiedDate = modifiedDate,
+                    Issues = new Collection<JournalIssue> {new JournalIssue {Id=5, JournalId = 5, ModifiedDate = modifiedDate, Content = data, ContentType = ContentType, FileName = fileName } }
                 }
             };
 

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Journals.Model
+namespace Medico.Model
 {
     public class SubscriptionViewModel
     {

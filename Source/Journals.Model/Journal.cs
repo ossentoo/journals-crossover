@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Journals.Model;
@@ -21,15 +22,11 @@ namespace Medico.Model
 
         public string FileName { get; set; }
 
-        public string ContentType { get; set; }
-
-        public byte[] Content { get; set; }
-
         public DateTime ModifiedDate { get; set; }
 
         [ForeignKey("UserId")]
         public UserProfile User { get; set; }
-
+        public virtual Collection<JournalIssue> Issues { get; set; }
         public int UserId { get; set; }
     }
 }

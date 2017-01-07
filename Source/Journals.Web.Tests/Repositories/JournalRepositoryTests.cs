@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data.Entity;
 using System.Linq;
 using Medico.Model;
@@ -18,57 +19,26 @@ namespace Medico.Web.Tests.Repositories
         private const string ContentType = "application/pdf";
         private const string ThirdJournalTitle = "3rd Journal";
         private const string ThirdJournalDescription = "3rd journal description";
+        private const string Title = "6th Journal";
+        private const string Description = "6th journal description";
+        private readonly Journal _journalItem;
+
+        public JournalRepositoryTests()
+        {
+            _journalItem = new Journal
+            {
+                Title = Title,
+                Description = Description,
+                Issues = new Collection<JournalIssue> { new JournalIssue { Id = 1, JournalId = 1, ModifiedDate = new DateTime(2016,01,01),
+                    Content = new byte[] { 1, 2, 3, 4, 5 }, ContentType = ContentType, FileName = "filename.txt" } },
+
+            };
+        }
 
         [TestInitialize]
         public void JournalRepositoryInitialize()
         {
-            _journals = new List<Journal>  {
-                new Journal {
-                    Id = 1,
-                    Title = "1st Journal",
-                    Description = "1st journal description",
-                    UserId = 1,
-                    Content = new byte[] { 1, 2, 3, 4, 5 },
-                    ContentType = ContentType,
-                    ModifiedDate = DateTime.UtcNow
-                },
-                new Journal {
-                    Id = 2,
-                    Title = "2nd Journal",
-                    Description = "2nd journal description",
-                    UserId = 1,
-                    Content = new byte[] { 1, 2, 3, 4, 5 },
-                    ContentType = ContentType,
-                    ModifiedDate = DateTime.UtcNow
-                },
-                new Journal {
-                    Id = 3,
-                    Title = ThirdJournalTitle,
-                    Description = ThirdJournalDescription,
-                    UserId = 1,
-                    Content = new byte[] { 1, 2, 3, 4, 5 },
-                    ContentType = ContentType,
-                    ModifiedDate = DateTime.UtcNow
-                },
-                new Journal {
-                    Id = 4,
-                    Title = "4th Journal",
-                    Description = "4th journal description",
-                    UserId = 2,
-                    Content = new byte[] { 1, 2, 3, 4, 5 },
-                    ContentType = ContentType,
-                    ModifiedDate = DateTime.UtcNow
-                },
-                new Journal {
-                    Id = 5,
-                    Title = "5th Journal",
-                    Description = "5th journal description",
-                    UserId = 2,
-                    Content = new byte[] { 1, 2, 3, 4, 5 },
-                    ContentType = ContentType,
-                    ModifiedDate = DateTime.UtcNow
-                }
-            }.AsQueryable();
+            _journals = MockData.Journals.AsQueryable();
 
             _context = SetupJournalsSet();
         }
@@ -76,25 +46,15 @@ namespace Medico.Web.Tests.Repositories
         [TestMethod]
         public void AddJournal_ReturnsStatus_True()
         {
-            const string title = "6th Journal";
-            const string description = "6th journal description";
-            var journal = new Journal
-            {
-                Id=6,
-                Title = title,
-                Description = description,
-                UserId = 6,
-                Content = new byte[] { 1, 2, 3, 4, 5 },
-                ContentType = ContentType
-            };
+
 
             var repository = new JournalRepository(_context.Object);
-            var result = repository.AddJournal(journal);
+            var result = repository.AddJournal(_journalItem);
             Assert.IsTrue(result.Status);
             Assert.AreEqual(6, _journals.Count());
             var lastItem = _journals.Last();
-            Assert.AreEqual(title, lastItem.Title);
-            Assert.AreEqual(description, lastItem.Description);
+            Assert.AreEqual(Title, lastItem.Title);
+            Assert.AreEqual(Description, lastItem.Description);
         }
 
         [TestMethod]

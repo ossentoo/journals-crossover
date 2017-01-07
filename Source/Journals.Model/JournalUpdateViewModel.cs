@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Web;
+using Journals.Model;
 
-namespace Journals.Model
+namespace Medico.Model
 {
     public class JournalUpdateViewModel
     {
