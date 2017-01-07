@@ -8,7 +8,6 @@ using System.Web.Security;
 using AutoMapper;
 using Journals.Model;
 using Medico.Model;
-using Medico.Repository;
 using Medico.Repository.Interfaces;
 using Medico.Web.Controllers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -23,17 +22,23 @@ namespace Medico.Web.Tests.Controllers
         private readonly Mock<MembershipUser> _userMock;
         private readonly Mock<IJournalRepository> _journalRepository;
         private readonly Mock<IIssueRepository> _issueRepository;
-        private readonly Journal _journalItem;
+        private Journal _journalItem;
         private const string ContentType = "application/pdf";
 
         public PublisherControllerTests()
         {
-            const string title = "6th Journal";
-            const string description = "6th journal description";
             _membershipRepository = new Mock<IStaticMembershipService>();
             _userMock = new Mock<MembershipUser>();
             _journalRepository = new Mock<IJournalRepository>();
             _issueRepository = new Mock<IIssueRepository>();
+
+        }
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            const string title = "6th Journal";
+            const string description = "6th journal description";
             _journalItem = new Journal
             {
                 Title = title,
@@ -43,16 +48,19 @@ namespace Medico.Web.Tests.Controllers
 
             };
 
-        }
-
-        [TestInitialize]
-        public void TestInitialize()
-        {
             _userMock.Setup(x => x.ProviderUserKey).Returns(1);
             _membershipRepository.Setup(x => x.GetUser()).Returns(_userMock.Object);
 
             _journalRepository.Setup(x => x.GetAllJournals((int)_userMock.Object.ProviderUserKey)).Returns(MockData.Journals);
+            _journalRepository.Setup(x => x.GetJournalIssues(1)).Returns(MockData.Journals[0].Issues);
+            _journalRepository.Setup(x => x.GetJournalById(1)).Returns(MockData.Journals[0]);
             _issueRepository.Setup(x => x.GetIssueById(It.IsAny<int>())).Returns(MockData.Issues.First());
+            _issueRepository.Setup(x => x.AddIssue(It.IsAny<Issue>())).Returns(new OperationStatus {Status = true});
+            _issueRepository.Setup(x => x.DeleteIssue(It.IsAny<Issue>())).Returns(() =>
+            {
+                _journalItem.Issues.RemoveAt(0);
+                return new OperationStatus {Status = true};
+            });
         }
 
         [TestMethod]
@@ -80,6 +88,22 @@ namespace Medico.Web.Tests.Controllers
             //Assert
             Assert.IsNull(actionResult.View);
         }
+
+        [TestMethod]
+        public void Issues_Returns_View()
+        {
+            //Act
+            var controller = new PublisherController(_journalRepository.Object, _issueRepository.Object, _membershipRepository.Object);
+
+            //Assert
+            var model = (JournalIssueViewList)((ViewResult)controller.Issues(1)).Model;
+
+            //Assert
+            Assert.AreEqual(3, model.Count);
+            Assert.AreEqual(ContentType, model[0].ContentType);
+
+        }
+
 
         [TestMethod]
         public void GetFile_Returns_Data()
@@ -116,7 +140,7 @@ namespace Medico.Web.Tests.Controllers
         }
 
         [TestMethod]
-        public void Create_Returns_IndexAction()
+        public void CreateJournal_Returns_IndexAction()
         {
 
             //Arrange
@@ -131,6 +155,31 @@ namespace Medico.Web.Tests.Controllers
             Assert.AreEqual(5, fileContentResult.FileContents.Length);
             Assert.AreEqual(4, fileContentResult.FileContents[3]);
             Assert.AreEqual(ContentType, fileContentResult.ContentType);
+        }
+
+        [TestMethod]
+        public void CreateIssue_Returns_IndexAction()
+        {
+            //Act
+            var controller = new PublisherController(_journalRepository.Object, _issueRepository.Object, _membershipRepository.Object);
+            var issue = (JournalIssueViewModel)((ViewResult)controller.CreateIssue(1)).Model; ;
+
+            //Assert
+            Assert.AreEqual(1, issue.JournalId);
+        }
+
+        [TestMethod]
+        public void CreateIssuePost_Returns_IndexAction()
+        {
+            //Arrange
+            var issueModel = Mapper.Map<Issue, JournalIssueViewModel>(_journalItem.Issues[0]);
+
+            //Act
+            var controller = new PublisherController(_journalRepository.Object, _issueRepository.Object, _membershipRepository.Object);
+            var result = (RedirectToRouteResult)controller.CreateIssue(issueModel);
+
+            //Assert
+            Assert.AreEqual("Issues", result.RouteValues["action"]);
         }
 
         [TestMethod]
@@ -175,7 +224,7 @@ namespace Medico.Web.Tests.Controllers
         }
 
         [TestMethod]
-        public void Delete_Returns_Journal()
+        public void DeleteJournal_Returns_Journal()
         {
             _journalRepository.Setup(x => x.GetJournalById(It.IsAny<int>())).Returns(_journalItem);
             var journalViewModel = Mapper.Map<Journal, JournalViewModel>(_journalItem);
@@ -204,7 +253,7 @@ namespace Medico.Web.Tests.Controllers
         }
 
         [TestMethod]
-        public void DeletePost_Returns_Index()
+        public void DeleteJournalPost_Returns_Index()
         {
             _journalRepository.Setup(x => x.DeleteJournal(It.IsAny<Journal>())).Returns(new OperationStatus { Status = true });
 
@@ -213,6 +262,49 @@ namespace Medico.Web.Tests.Controllers
             //Act
             var controller = new PublisherController(_journalRepository.Object, _issueRepository.Object, _membershipRepository.Object);
             var result = (RedirectToRouteResult)controller.Delete(journalViewModel);
+
+            //Assert
+            Assert.AreEqual("Index", result.RouteValues["action"]);
+        }
+
+        [TestMethod]
+        public void DeleteIssue_Returns_Issue()
+        {
+            var journalViewModel = Mapper.Map<Journal, JournalViewModel>(_journalItem);
+
+            //Act
+            var controller = new PublisherController(_journalRepository.Object, _issueRepository.Object, _membershipRepository.Object);
+            var model = (JournalIssueViewModel)((ViewResult)controller.DeleteIssue(1)).Model;
+
+            //Assert
+            Assert.AreEqual(journalViewModel.Content.Length, model.Content.Length);
+            Assert.IsTrue(journalViewModel.ContentType.Equals(model.ContentType));
+        }
+
+        [TestMethod]
+        public void DeleteIssuePost_Returns_IssuesAction()
+        {
+            var issueViewModel = Mapper.Map<Issue, JournalIssueViewModel>(MockData.Journals[0].Issues.First()); ;
+            //Act
+            var controller = new PublisherController(_journalRepository.Object, _issueRepository.Object, _membershipRepository.Object);
+            var result = (RedirectToRouteResult)controller.DeleteIssue(issueViewModel);
+
+            //Assert
+            Assert.AreEqual("Issues", result.RouteValues["action"]);
+        }
+
+        [TestMethod]
+        public void DeleteIssuePost_Returns_IndexAction()
+        {
+
+            var issueViewModel = Mapper.Map<Issue, JournalIssueViewModel>(MockData.Journals[1].Issues.First());
+            var journal = MockData.Journals[1];
+            journal.Issues.Clear();
+            _journalRepository.Setup(x => x.GetJournalById(It.IsAny<int>())).Returns(journal);
+
+            //Act
+            var controller = new PublisherController(_journalRepository.Object, _issueRepository.Object, _membershipRepository.Object);
+            var result = (RedirectToRouteResult)controller.DeleteIssue(issueViewModel);
 
             //Assert
             Assert.AreEqual("Index", result.RouteValues["action"]);

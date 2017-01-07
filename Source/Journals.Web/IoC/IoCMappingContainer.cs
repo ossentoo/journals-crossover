@@ -18,11 +18,13 @@ namespace Medico.Web.IoC
 
             var context = _Instance.Resolve<JournalsContext>();
 
+            _Instance.RegisterType<IWebSecurity, JournalWebSecurity>(new HierarchicalLifetimeManager());
             _Instance.RegisterType<IIssueRepository, IssueRepository>(new HierarchicalLifetimeManager(), new InjectionConstructor(context));
             _Instance.RegisterType<IJournalRepository, JournalRepository>(new HierarchicalLifetimeManager(), new InjectionConstructor(context));
             _Instance.RegisterType<ISubscriptionRepository, SubscriptionRepository>(new HierarchicalLifetimeManager(), new InjectionConstructor(context));
             _Instance.RegisterType<IStaticMembershipService, StaticMembershipService>(new HierarchicalLifetimeManager());
 
+            _Instance.RegisterType<AccountController>();
             _Instance.RegisterType<HomeController>();
             _Instance.RegisterType<PublisherController>();
             _Instance.RegisterType<SubscriberController>();

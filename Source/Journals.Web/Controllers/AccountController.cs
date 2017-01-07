@@ -7,6 +7,7 @@ using System.Web.Security;
 using DotNetOpenAuth.AspNet;
 using Journals.Model;
 using Medico.Repository.DataContext;
+using Medico.Repository.Interfaces;
 using Microsoft.Web.WebPages.OAuth;
 using WebMatrix.WebData;
 
@@ -15,6 +16,12 @@ namespace Medico.Web.Controllers
     [Authorize]
     public class AccountController : Controller
     {
+        private readonly IWebSecurity _webSecurity;
+
+        public AccountController(IWebSecurity webSecurity)
+        {
+            _webSecurity = webSecurity;
+        }
         //
         // GET: /Account/Login
 
@@ -40,7 +47,7 @@ namespace Medico.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Login(LoginModel model, string returnUrl)
         {
-            if (ModelState.IsValid && WebSecurity.Login(model.UserName, model.Password, persistCookie: model.RememberMe))
+            if (ModelState.IsValid && _webSecurity.Login(model.UserName, model.Password, persistCookie: model.RememberMe))
             {
                 return RedirectToLocal(returnUrl);
             }
@@ -57,7 +64,7 @@ namespace Medico.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
-            WebSecurity.Logout();
+            _webSecurity.Logout();
 
             return RedirectToAction("Index", "Home");
         }
@@ -84,8 +91,8 @@ namespace Medico.Web.Controllers
                 // Attempt to register the user
                 try
                 {
-                    WebSecurity.CreateUserAndAccount(model.UserName, model.Password);
-                    WebSecurity.Login(model.UserName, model.Password);
+                    _webSecurity.CreateUserAndAccount(model.UserName, model.Password);
+                    _webSecurity.Login(model.UserName, model.Password);
                     return RedirectToAction("Index", "Home");
                 }
                 catch (MembershipCreateUserException e)
@@ -114,7 +121,7 @@ namespace Medico.Web.Controllers
                 // Use a transaction to prevent the user from deleting their last login credential
                 using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
                 {
-                    bool hasLocalAccount = OAuthWebSecurity.HasLocalAccount(WebSecurity.GetUserId(User.Identity.Name));
+                    bool hasLocalAccount = OAuthWebSecurity.HasLocalAccount(_webSecurity.GetUserId(User.Identity.Name));
                     if (hasLocalAccount || OAuthWebSecurity.GetAccountsFromUserName(User.Identity.Name).Count > 1)
                     {
                         OAuthWebSecurity.DeleteAccount(provider, providerUserId);
@@ -137,7 +144,7 @@ namespace Medico.Web.Controllers
                 : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
                 : message == ManageMessageId.RemoveLoginSuccess ? "The external login was removed."
                 : "";
-            ViewBag.HasLocalPassword = OAuthWebSecurity.HasLocalAccount(WebSecurity.GetUserId(User.Identity.Name));
+            ViewBag.HasLocalPassword = OAuthWebSecurity.HasLocalAccount(_webSecurity.GetUserId(User.Identity.Name));
             ViewBag.ReturnUrl = Url.Action("Manage");
             return View();
         }
@@ -149,7 +156,7 @@ namespace Medico.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Manage(LocalPasswordModel model)
         {
-            bool hasLocalAccount = OAuthWebSecurity.HasLocalAccount(WebSecurity.GetUserId(User.Identity.Name));
+            bool hasLocalAccount = OAuthWebSecurity.HasLocalAccount(_webSecurity.GetUserId(User.Identity.Name));
             ViewBag.HasLocalPassword = hasLocalAccount;
             ViewBag.ReturnUrl = Url.Action("Manage");
             if (hasLocalAccount)
@@ -160,7 +167,7 @@ namespace Medico.Web.Controllers
                     bool changePasswordSucceeded;
                     try
                     {
-                        changePasswordSucceeded = WebSecurity.ChangePassword(User.Identity.Name, model.OldPassword, model.NewPassword);
+                        changePasswordSucceeded = _webSecurity.ChangePassword(User.Identity.Name, model.OldPassword, model.NewPassword);
                     }
                     catch (Exception)
                     {
@@ -182,21 +189,18 @@ namespace Medico.Web.Controllers
                 // User does not have a local password so remove any validation errors caused by a missing
                 // OldPassword field
                 ModelState state = ModelState["OldPassword"];
-                if (state != null)
-                {
-                    state.Errors.Clear();
-                }
+                state?.Errors.Clear();
 
                 if (ModelState.IsValid)
                 {
                     try
                     {
-                        WebSecurity.CreateAccount(User.Identity.Name, model.NewPassword);
+                        _webSecurity.CreateAccount(User.Identity.Name, model.NewPassword);
                         return RedirectToAction("Manage", new { Message = ManageMessageId.SetPasswordSuccess });
                     }
                     catch (Exception)
                     {
-                        ModelState.AddModelError("", String.Format("Unable to create local account. An account with the name \"{0}\" may already exist.", User.Identity.Name));
+                        ModelState.AddModelError("", $"Unable to create local account. An account with the name \"{User.Identity.Name}\" may already exist.");
                     }
                 }
             }
@@ -329,7 +333,7 @@ namespace Medico.Web.Controllers
                 });
             }
 
-            ViewBag.ShowRemoveButton = externalLogins.Count > 1 || OAuthWebSecurity.HasLocalAccount(WebSecurity.GetUserId(User.Identity.Name));
+            ViewBag.ShowRemoveButton = externalLogins.Count > 1 || OAuthWebSecurity.HasLocalAccount(_webSecurity.GetUserId(User.Identity.Name));
             return PartialView("_RemoveExternalLoginsPartial", externalLogins);
         }
 

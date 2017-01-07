@@ -83,6 +83,7 @@
     <Compile Include="Interfaces\IStaticMembershipService.cs" />
     <Compile Include="Interfaces\ISubscriptionRepository.cs" />
     <Compile Include="Interfaces\IJournalRepository.cs" />
+    <Compile Include="Interfaces\IWebSecurity.cs" />
     <Compile Include="Repositories\IssueRepository.cs" />
     <Compile Include="StaticMembershipService.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="DataContext\UserContext.cs" />
+    <Compile Include="JournalWebSecurity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -1,19 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Web.Mvc;
-using System.Web.Security;
-using AutoMapper;
 using Journals.Model;
+using Medico.Repository.Interfaces;
 using Medico.Web.Controllers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Telerik.JustMock;
+using Moq;
 
 namespace Medico.Web.Tests.Controllers
 {
     [TestClass]
     public class AccountControllerTests
     {
+        private readonly Mock<IWebSecurity> _webSecurity;
+
+        public AccountControllerTests()
+        {
+            _webSecurity = new Mock<IWebSecurity>();
+        }
         [TestMethod]
         public void UnauthorizedLogin_Returns_ErrorMessageInModelState()
         {
@@ -22,7 +25,7 @@ namespace Medico.Web.Tests.Controllers
             var error = "Unauthorized";
 
             //Act
-            var controller = new AccountController();
+            var controller = new AccountController(_webSecurity.Object);
             var actionResult = (ViewResult)controller.Login(returnUrl, error);
             var data = actionResult.ViewData;
 
@@ -44,7 +47,7 @@ namespace Medico.Web.Tests.Controllers
             };
 
             //Act
-            var controller = new AccountController();
+            var controller = new AccountController(_webSecurity.Object);
             controller.ModelState.AddModelError("Login", "Username is mandatory.");
             var actionResult = (ViewResult)controller.Login(model, error);
             var data = actionResult.ViewData;
@@ -53,6 +56,19 @@ namespace Medico.Web.Tests.Controllers
             var modelState = data.ModelState.Values.First();
             Assert.IsTrue(modelState.Errors.Count == 1);
             Assert.AreEqual("Username is mandatory.", modelState.Errors.ElementAt(0).ErrorMessage);
+        }
+
+        [TestMethod]
+        public void Logout_Returns_RedirectAction()
+        {
+            //Arrange
+            //Act
+            var controller = new AccountController(_webSecurity.Object);
+            var actionResult = (RedirectToRouteResult)controller.LogOff();
+
+            //Assert
+            Assert.AreEqual("Home", actionResult.RouteValues["controller"]);
+            Assert.AreEqual("Index", actionResult.RouteValues["action"]);
         }
     }
 }
