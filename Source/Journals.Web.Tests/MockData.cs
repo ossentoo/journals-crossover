@@ -12,6 +12,7 @@ namespace Medico.Web.Tests
         public static string ContentType => "application/pdf";
         private const string ThirdJournalTitle = "3rd Journal";
         private const string ThirdJournalDescription = "3rd journal description";
+        public static List<Issue> Issues { get; private set; }
         public static List<Journal> Journals { get; private set; }
         public static List<Subscription> Subscriptions { get; private set; }
         public static List<UserProfile> Users { get; private set; }
@@ -131,7 +132,7 @@ namespace Medico.Web.Tests
 
             Users = new List<UserProfile> { user1 , user2};
 
+            Issues = Journals.SelectMany(i => i.Issues).ToList();
         }
-
     }
 }

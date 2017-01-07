@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using Medico.Model;
 using Medico.Repository;
@@ -103,6 +104,16 @@ namespace Medico.Web.Tests.Repositories
             Assert.IsTrue(result.Status);
             Assert.AreEqual(4, _journals.Count());
             Assert.IsNull(_journals.FirstOrDefault(x=>x.Id== journal.Id));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void UpdateJournalById_Returns_Success()
+        {
+            var repository = new JournalRepository(_context.Object);
+            var journal = _journals.ElementAt(4);
+
+            repository.UpdateJournal(journal);
         }
 
         private Mock<JournalsContext> SetupJournalsSet()

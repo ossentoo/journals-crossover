@@ -14,7 +14,7 @@ namespace Medico.Repository.DataContext
         }
 
         public virtual DbSet<Journal> Journals { get; set; }
-        public virtual DbSet<Issue> JournalIssues { get; set; }
+        public virtual DbSet<Issue> Issues { get; set; }
         public virtual DbSet<Subscription> Subscriptions { get; set; }
         public bool IsDisposed { get; set; }
 
@@ -24,7 +24,7 @@ namespace Medico.Repository.DataContext
             base.Configuration.LazyLoadingEnabled = false;
             modelBuilder.Entity<Journal>().ToTable("Journals");
             modelBuilder.Entity<Subscription>().ToTable("Subscriptions");
-            modelBuilder.Entity<Issue>().ToTable("JournalIssues");
+            modelBuilder.Entity<Issue>().ToTable("Issues");
             base.OnModelCreating(modelBuilder);
         }
 

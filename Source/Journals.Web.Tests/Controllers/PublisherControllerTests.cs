@@ -79,7 +79,7 @@ namespace Medico.Web.Tests.Controllers
         }
 
         [TestMethod]
-        public void GetFile_Returns_A_Journal()
+        public void GetFile_Returns_Data()
         {
             
             //Arrange

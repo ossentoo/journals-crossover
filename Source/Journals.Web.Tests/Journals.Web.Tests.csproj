@@ -149,6 +149,7 @@
     <Compile Include="Controllers\SubscriberControllerTests.cs" />
     <Compile Include="MockData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\IssueRepositoryTests.cs" />
     <Compile Include="Repositories\SubscriptionRepositoryTests.cs" />
     <Compile Include="Repositories\JournalRepositoryTests.cs" />
   </ItemGroup>

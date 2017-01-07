@@ -96,6 +96,27 @@ namespace Medico.Web.Tests.Repositories
         }
 
         [TestMethod]
+        public void GetJournalsForSubscriber_ForNullUser_ReturnsList()
+        {
+            _subscriptions = null;
+            _context.Setup(m => m.Set<Subscription>()).Returns((DbSet<Subscription>) null);
+
+            var repository = new SubscriptionRepository(_context.Object);
+            var userJournals = repository.GetJournalsForSubscriber(4);
+
+            Assert.AreEqual(0, userJournals.Count);
+        }
+
+        [TestMethod]
+        public void GetJournalsForSubscriber_ForUserWithNoSubscriptions_ReturnsList()
+        {
+            var repository = new SubscriptionRepository(_context.Object);
+            var userJournals = repository.GetJournalsForSubscriber(3);
+
+            Assert.AreEqual(0, userJournals.Count);
+        }
+
+        [TestMethod]
         public void GetJournalsForSubscriber_UserId_ReturnsList()
         {
             var repository = new SubscriptionRepository(_context.Object);
