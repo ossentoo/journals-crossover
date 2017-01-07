@@ -129,11 +129,16 @@ namespace Medico.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(JournalViewModel journal)
+        public ActionResult Delete(JournalViewModel model)
         {
-            var selectedJournal = Mapper.Map<JournalViewModel, Journal>(journal);
+            var journal = _journalRepository.GetJournalById(model.Id);
 
-            var opStatus = _journalRepository.DeleteJournal(selectedJournal);
+            foreach (var issue in journal.Issues.ToArray())
+            {
+                _issueRepository.DeleteIssue(issue);
+            }
+
+            var opStatus = _journalRepository.DeleteJournal(journal);
             if (!opStatus.Status)
                 throw new System.Web.Http.HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound));
 

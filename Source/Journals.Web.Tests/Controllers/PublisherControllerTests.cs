@@ -41,6 +41,7 @@ namespace Medico.Web.Tests.Controllers
             const string description = "6th journal description";
             _journalItem = new Journal
             {
+                Id = 7,
                 Title = title,
                 Description = description,
                 Issues = new Collection<Issue> { new Issue { Id = 1, JournalId = 1, ModifiedDate = new DateTime(2016,01,01),
@@ -53,14 +54,10 @@ namespace Medico.Web.Tests.Controllers
 
             _journalRepository.Setup(x => x.GetAllJournals((int)_userMock.Object.ProviderUserKey)).Returns(MockData.Journals);
             _journalRepository.Setup(x => x.GetJournalIssues(1)).Returns(MockData.Journals[0].Issues);
-            _journalRepository.Setup(x => x.GetJournalById(1)).Returns(MockData.Journals[0]);
+            _journalRepository.Setup(x => x.GetJournalById(It.IsAny<int>())).Returns(MockData.Journals[0]);
             _issueRepository.Setup(x => x.GetIssueById(It.IsAny<int>())).Returns(MockData.Issues.First());
             _issueRepository.Setup(x => x.AddIssue(It.IsAny<Issue>())).Returns(new OperationStatus {Status = true});
-            _issueRepository.Setup(x => x.DeleteIssue(It.IsAny<Issue>())).Returns(() =>
-            {
-                _journalItem.Issues.RemoveAt(0);
-                return new OperationStatus {Status = true};
-            });
+            _issueRepository.Setup(x => x.DeleteIssue(It.IsAny<Issue>())).Returns(() => new OperationStatus {Status = true});
         }
 
         [TestMethod]

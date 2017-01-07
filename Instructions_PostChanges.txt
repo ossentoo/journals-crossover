@@ -1,2 +1,0 @@
-Instructions
-Please ensure existing JournalDB has been dropped so that the application can create the database from scratch.
