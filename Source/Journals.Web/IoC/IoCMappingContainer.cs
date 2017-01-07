@@ -12,16 +12,13 @@ namespace Medico.Web.IoC
     {
         private static IUnityContainer _Instance = new UnityContainer();
 
-        static IoCMappingContainer()
-        {
-        }
-
         public static IUnityContainer GetInstance()
         {
             _Instance.RegisterType<DbContext, JournalsContext>();
 
             var context = _Instance.Resolve<JournalsContext>();
 
+            _Instance.RegisterType<IIssueRepository, IssueRepository>(new HierarchicalLifetimeManager(), new InjectionConstructor(context));
             _Instance.RegisterType<IJournalRepository, JournalRepository>(new HierarchicalLifetimeManager(), new InjectionConstructor(context));
             _Instance.RegisterType<ISubscriptionRepository, SubscriptionRepository>(new HierarchicalLifetimeManager(), new InjectionConstructor(context));
             _Instance.RegisterType<IStaticMembershipService, StaticMembershipService>(new HierarchicalLifetimeManager());

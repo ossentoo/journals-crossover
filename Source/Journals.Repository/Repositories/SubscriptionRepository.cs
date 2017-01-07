@@ -29,7 +29,7 @@ namespace Medico.Repository.Repositories
                                     a.User,
                                     a.UserId,
                                     a.ModifiedDate,
-                                    a.FileName
+                                    a.Issues
                                 };
 
                 if (result == null || !result.Any())
@@ -44,7 +44,7 @@ namespace Medico.Repository.Repositories
                                         UserId = f.UserId,
                                         User = f.User,
                                         ModifiedDate = f.ModifiedDate,
-                                        FileName = f.FileName
+                                        Issues =  f.Issues
                                     }).ToList();
 
                 return list;

@@ -376,6 +376,8 @@
     <Content Include="Views\Subscriber\Index.cshtml" />
     <Content Include="Views\Error\RequestLengthExceeded.cshtml" />
     <Content Include="Views\Publisher\Issues.cshtml" />
+    <Content Include="Views\Publisher\CreateIssue.cshtml" />
+    <Content Include="Views\Publisher\DeleteIssue.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

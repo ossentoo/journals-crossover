@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Mime;
@@ -13,10 +14,8 @@ namespace Medico.Model.Helpers
         {
             Mapper.CreateMap<Journal, JournalViewModel>()
                 .ForMember(x => x.ContentType, opt => opt.MapFrom(o => o.Issues.First()!=null? o.Issues.First().ContentType:string.Empty))
-                .ForMember(x => x.Content, opt => opt.MapFrom(o => o.Issues.First() != null ? o.Issues.First().Content : null));
+                .ForMember(x => x.Content, opt => opt.MapFrom(o => o.Issues!=null && o.Issues.Any() ? o.Issues.First().Content : null));
 
-            Mapper.CreateMap<Issue, JournalIssueViewModel>()
-                .ForMember(x => x.Title, opt => opt.MapFrom(o => o.Journal.Title));
 
             Mapper.CreateMap<JournalViewModel, Journal>()
                 .ForMember(x=>x.ModifiedDate,  opt => opt.MapFrom(o => DateTime.UtcNow))
@@ -28,7 +27,6 @@ namespace Medico.Model.Helpers
                     foreach (var c in d.Issues)
                     {
                         c.Journal = d;
-                        c.FileName = d.FileName;
                     }
                 });
 
@@ -45,6 +43,14 @@ namespace Medico.Model.Helpers
 
             Mapper.CreateMap<Journal, SubscriptionViewModel>();
             Mapper.CreateMap<SubscriptionViewModel, Journal>();
+
+            Mapper.CreateMap<Issue, JournalIssueViewModel>()
+                .ForMember(x => x.Title, opt => opt.MapFrom(o => o.Journal.Title))
+                .ForMember(x => x.Created, opt => opt.MapFrom(o => o.ModifiedDate));
+
+            Mapper.CreateMap<JournalIssueViewModel, Issue>()
+                .ForMember(x => x.Id, opt => opt.MapFrom(o => 0))
+                .ForMember(x => x.ModifiedDate, opt => opt.MapFrom(o => DateTime.UtcNow));
         }
     }
 }

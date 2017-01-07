@@ -1,7 +1,7 @@
-﻿@model List<Medico.Model.JournalIssueViewModel>
+﻿@model Medico.Model.JournalIssueViewList
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Issues";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -20,43 +20,44 @@
     </style>
 }
 
-<h2>Publisher - List of Journals</h2>
+<h2>Publisher - List of Journal Issues for @Model.Title</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Create New Issue", "CreateIssue", new { Id = Model.JournalId })
 </p>
 
-@if (Model.Count == 0)
-{
-    <div>  Click @Html.ActionLink("here", "Create") to upload a new issue.</div>
-}
-else
-{
-    <table class="table table-condensed table-striped">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Description</th>
-                <th>File</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Title)
-                    </td>
-                    <td>
-                        @Html.ActionLink(item.FileName, "GetFile", new { Id = item.Id }, new { target = "_blank" })
-                    </td>
-                    <td>
-                        @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                        @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+<table class="table table-condensed table-striped">
+    <thead>
+        <tr>
+            <th>Issue</th>
+            <th>Created</th>
+            <th>File</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.DisplayTitle)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Created)
+            </td>
+            <td>
+                @Html.ActionLink(item.FileName, "GetFile", new { id = item.Id }, new { target = "_blank" })
+            </td>
+            <td>
+                @Html.ActionLink("Delete", "DeleteIssue", new { id = item.Id })
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+<br />
+<div class="form-group">
+    <div class="col-md-offset-2 col-md-10">
+        @Html.ActionLink("Back to Journals", "Index")
+    </div>
+</div>

@@ -20,8 +20,6 @@ namespace Medico.Model
         [Required, DataType(DataType.MultilineText)]
         public string Description { get; set; }
 
-        public string FileName { get; set; }
-
         public DateTime ModifiedDate { get; set; }
 
         [ForeignKey("UserId")]

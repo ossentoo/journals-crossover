@@ -22,6 +22,7 @@ namespace Medico.Web.Tests.Controllers
         private readonly Mock<IStaticMembershipService> _membershipRepository;
         private readonly Mock<MembershipUser> _userMock;
         private readonly Mock<IJournalRepository> _journalRepository;
+        private readonly Mock<IIssueRepository> _issueRepository;
         private readonly Journal _journalItem;
         private const string ContentType = "application/pdf";
 
@@ -32,6 +33,7 @@ namespace Medico.Web.Tests.Controllers
             _membershipRepository = new Mock<IStaticMembershipService>();
             _userMock = new Mock<MembershipUser>();
             _journalRepository = new Mock<IJournalRepository>();
+            _issueRepository = new Mock<IIssueRepository>();
             _journalItem = new Journal
             {
                 Title = title,
@@ -50,6 +52,7 @@ namespace Medico.Web.Tests.Controllers
             _membershipRepository.Setup(x => x.GetUser()).Returns(_userMock.Object);
 
             _journalRepository.Setup(x => x.GetAllJournals((int)_userMock.Object.ProviderUserKey)).Returns(MockData.Journals);
+            _issueRepository.Setup(x => x.GetIssueById(It.IsAny<int>())).Returns(MockData.Issues.First());
         }
 
         [TestMethod]
@@ -57,7 +60,7 @@ namespace Medico.Web.Tests.Controllers
         {
 
             //Act
-            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
+            var controller = new PublisherController(_journalRepository.Object, _issueRepository.Object, _membershipRepository.Object);
             var actionResult = (ViewResult)controller.Index();
             var model = actionResult.Model as IEnumerable<JournalViewModel>;
 
@@ -71,7 +74,7 @@ namespace Medico.Web.Tests.Controllers
         {
 
             //Act
-            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
+            var controller = new PublisherController(_journalRepository.Object, _issueRepository.Object, _membershipRepository.Object);
             var actionResult = (ViewResult)controller.Create();
 
             //Assert
@@ -91,8 +94,8 @@ namespace Medico.Web.Tests.Controllers
             _journalRepository.Setup(x => x.GetJournalById(It.IsInRange(1,10, Range.Inclusive))).Returns(_journalItem);
 
             //Act
-            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
-            var fileContentResult = (FileContentResult)controller.GetFile(1, 1);
+            var controller = new PublisherController(_journalRepository.Object, _issueRepository.Object, _membershipRepository.Object);
+            var fileContentResult = (FileContentResult)controller.GetFile(1);
 
             //Assert
             Assert.AreEqual(5, fileContentResult.FileContents.Length);
@@ -101,17 +104,15 @@ namespace Medico.Web.Tests.Controllers
         }
 
         [TestMethod]
-        [ExpectedException(typeof(HttpResponseException))]
+        [ExpectedException(typeof(ArgumentException))]
         public void GetFile_Returns_Exception()
         {
             //Arrange
-            var journalRepository = new Mock<IJournalRepository>();
 
-            journalRepository.Setup(x => x.GetJournalById(0)).Returns((Journal) null);
-
+            _issueRepository.Setup(x=>x.GetIssueById(It.IsAny<int>())).Returns(new Issue {Content = null});
             //Act
-            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
-            controller.GetFile(0, 1);
+            var controller = new PublisherController(_journalRepository.Object, _issueRepository.Object, _membershipRepository.Object);
+            controller.GetFile(1);
         }
 
         [TestMethod]
@@ -123,8 +124,8 @@ namespace Medico.Web.Tests.Controllers
             _journalRepository.Setup(x => x.GetJournalById(It.IsInRange(1, 10, Range.Inclusive))).Returns(_journalItem);
 
             //Act
-            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
-            var fileContentResult = (FileContentResult)controller.GetFile(1, 1);
+            var controller = new PublisherController(_journalRepository.Object, _issueRepository.Object, _membershipRepository.Object);
+            var fileContentResult = (FileContentResult)controller.GetFile(1);
 
             //Assert
             Assert.AreEqual(5, fileContentResult.FileContents.Length);
@@ -139,7 +140,7 @@ namespace Medico.Web.Tests.Controllers
             var model = new JournalViewModel {Title="This Journal", Description = "This journal description", UserId=-99};
 
             //Act
-            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
+            var controller = new PublisherController(_journalRepository.Object, _issueRepository.Object, _membershipRepository.Object);
             controller.ModelState.AddModelError("Model error","Incorrectly setup journal model");
             var result = (ViewResult)controller.Create(model);
 
@@ -167,7 +168,7 @@ namespace Medico.Web.Tests.Controllers
             _journalRepository.Setup(x => x.AddJournal(It.IsAny<Journal>())).Returns(new OperationStatus { Status = false });
 
             //Act
-            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
+            var controller = new PublisherController(_journalRepository.Object, _issueRepository.Object, _membershipRepository.Object);
             controller.Create(model);
 
             //Assert
@@ -180,7 +181,7 @@ namespace Medico.Web.Tests.Controllers
             var journalViewModel = Mapper.Map<Journal, JournalViewModel>(_journalItem);
 
             //Act
-            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
+            var controller = new PublisherController(_journalRepository.Object, _issueRepository.Object, _membershipRepository.Object);
             var model = (JournalViewModel)((ViewResult)controller.Delete(1)).Model;
 
             //Assert
@@ -197,7 +198,7 @@ namespace Medico.Web.Tests.Controllers
             var journalViewModel = Mapper.Map<Journal, JournalViewModel>(_journalItem);
 
             //Act
-            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
+            var controller = new PublisherController(_journalRepository.Object, _issueRepository.Object, _membershipRepository.Object);
             controller.Delete(journalViewModel);
 
         }
@@ -210,7 +211,7 @@ namespace Medico.Web.Tests.Controllers
             var journalViewModel = Mapper.Map<Journal, JournalViewModel>(_journalItem);
 
             //Act
-            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
+            var controller = new PublisherController(_journalRepository.Object, _issueRepository.Object, _membershipRepository.Object);
             var result = (RedirectToRouteResult)controller.Delete(journalViewModel);
 
             //Assert
@@ -224,7 +225,7 @@ namespace Medico.Web.Tests.Controllers
             var journalUpdateViewModel = Mapper.Map<Journal, JournalUpdateViewModel>(_journalItem);
 
             //Act
-            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
+            var controller = new PublisherController(_journalRepository.Object, _issueRepository.Object, _membershipRepository.Object);
             var model = (JournalUpdateViewModel)((ViewResult)controller.Edit(1)).Model;
 
             //Assert
@@ -241,7 +242,7 @@ namespace Medico.Web.Tests.Controllers
             var journalViewModel = Mapper.Map<Journal, JournalUpdateViewModel>(_journalItem);
 
             //Act
-            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
+            var controller = new PublisherController(_journalRepository.Object, _issueRepository.Object, _membershipRepository.Object);
             controller.Edit(journalViewModel);
         }
 
@@ -253,7 +254,7 @@ namespace Medico.Web.Tests.Controllers
             var journalViewModel = Mapper.Map<Journal, JournalUpdateViewModel>(_journalItem);
 
             //Act
-            var controller = new PublisherController(_journalRepository.Object, _membershipRepository.Object);
+            var controller = new PublisherController(_journalRepository.Object, _issueRepository.Object, _membershipRepository.Object);
             var result = (RedirectToRouteResult)controller.Edit(journalViewModel);
 
             //Assert

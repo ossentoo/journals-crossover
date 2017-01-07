@@ -1,4 +1,4 @@
-﻿@model Medico.Model.JournalViewModel
+﻿@model Medico.Model.JournalIssueViewModel
 
 @{
     ViewBag.Title = "Delete";
@@ -7,7 +7,7 @@
 
 <h2>Delete</h2>
 
-<h3>Are you sure you want to delete this journal?</h3>
+<h3>Are you sure you want to delete this issue?</h3>
 <div>
     <hr />
     <dl class="dl-horizontal">
@@ -15,14 +15,12 @@
             @Html.DisplayNameFor(model => model.Title)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Title)
+            @Html.DisplayFor(model => model.DisplayTitle)
         </dd>
-        <dt class="label">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
 
+        <dt class="label">File</dt>
         <dd>
-            @Html.DisplayFor(model => model.Description)
+            @Html.ActionLink(Model.FileName, "GetFile", new { id = Model.Id }, new { target = "_blank" })
         </dd>
     </dl>
 
@@ -32,7 +30,7 @@
 
         <div class="form-actions no-color">
             <input type="submit" value="Delete" class="btn btn-default" /> |
-            @Html.ActionLink("Back to List", "Index")
+            @Html.ActionLink("Back to List", "Issues",  new { id = Model.Id })
         </div>
     }
 </div>

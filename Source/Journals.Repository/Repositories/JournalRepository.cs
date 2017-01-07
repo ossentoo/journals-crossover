@@ -28,7 +28,9 @@ namespace Medico.Repository.Repositories
 
         public IEnumerable<Issue> GetJournalIssues(int journalId)
         {
-            var journal = Get(j => j.Id == journalId).First();
+            var journal = Get(j => j.Id == journalId)
+                .OrderBy(x=>x.ModifiedDate)
+                .First();
 
             return journal?.Issues;
         }
